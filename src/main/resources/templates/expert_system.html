@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Operational Expert System')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('expert-system')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Expert System')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="expertFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">Operational Expert System</h1>
+                    <p class="label-muted mt-1">
+                        Automated operational decision making using a forward-chaining inference engine to evaluate credit qualification and assign credit limits (Knowledge Base Rules, Slides 8-9).
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <th:block th:if="${!isOperations}">
+                        <a th:href="@{/expert-system/thresholds}" class="btn btn-secondary">
+                            Tune Engine Parameters →
+                        </a>
+                    </th:block>
+                    <th:block th:if="${isOperations}">
+                        <button class="btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Rule threshold configuration restricted to Managers">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Tune Parameters (Locked)
+                        </button>
+                    </th:block>
+                    <a th:href="@{/expert-system/export-csv}" class="btn btn-secondary">
+                        Export CSV
+                    </a>
+                </div>
+            </section>
+
+            <!-- Visual Rule Knowledge Base SVG Flowchart -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Knowledge Base Rule Topology &amp; Active Firing Path</h2>
+                        <p class="label-muted mt-0.5">Automated inference path highlighting (Unit 5 Slide 9 Flowchart)</p>
+                    </div>
+                    <div class="status-indicator">
+                        <span class="status-dot dot-green"></span>
+                        <span class="label-medium">Forward Chaining</span>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch; text-align: center;">
+                    <svg viewBox="0 0 960 215" class="rule-topology-svg" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 8 5 L 0 9 z" class="rule-link-marker" fill="#6B7280" />
+                            </marker>
+                            <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 8 5 L 0 9 z" fill="#16A34A" />
+                            </marker>
+                            <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 8 5 L 0 9 z" fill="#D97706" />
+                            </marker>
+                            <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 8 5 L 0 9 z" fill="#DC2626" />
+                            </marker>
+                        </defs>
+
+                        <!-- Connecting lines between main rules (YES paths) -->
+                        <line x1="130" y1="49" x2="175" y2="49" class="rule-link-line" marker-end="url(#arrow)"/>
+                        <line x1="285" y1="49" x2="330" y2="49" class="rule-link-line" marker-end="url(#arrow)"/>
+                        <line x1="440" y1="49" x2="485" y2="49" class="rule-link-line" marker-end="url(#arrow)"/>
+
+                        <!-- Exit reject lines (NO paths from A, B, C) -->
+                        <line x1="72" y1="78" x2="72" y2="135" class="rule-link-line" marker-end="url(#arrow-red)"/>
+                        <line x1="232" y1="78" x2="232" y2="135" class="rule-link-line" marker-end="url(#arrow-red)"/>
+                        <line x1="387" y1="78" x2="387" y2="135" class="rule-link-line" marker-end="url(#arrow-red)"/>
+
+                        <!-- Rule E -> State F (Tenure >= 4 -> Approved) -->
+                        <line x1="605" y1="49" x2="780" y2="49" class="rule-link-line" marker-end="url(#arrow-green)"/>
+                        <text x="690" y="41" text-anchor="middle" class="rule-branch-label" fill="var(--status-green)">YES (Tenure ≥ 4)</text>
+
+                        <!-- Rule E -> Rule H (Tenure < 4 -> Secondary Debt Check) -->
+                        <path d="M 547 78 L 547 159 L 630 159" class="rule-link-path" marker-end="url(#arrow)"/>
+                        <text x="557" y="115" text-anchor="start" class="rule-branch-label" fill="var(--status-amber)">NO</text>
+
+                        <!-- Rule H -> State F (Debt < 5% -> Approved) -->
+                        <path d="M 745 146 L 765 146 L 765 65 L 780 65" class="rule-link-path" marker-end="url(#arrow-green)"/>
+                        <text x="760" y="108" text-anchor="end" class="rule-branch-label" fill="var(--status-green)">YES</text>
+
+                        <!-- Rule H -> State I (Debt >= 5% -> Restricted Line $3000) -->
+                        <line x1="745" y1="172" x2="780" y2="172" class="rule-link-line" marker-end="url(#arrow-amber)"/>
+                        <text x="765" y="187" text-anchor="middle" class="rule-branch-label" fill="var(--status-amber)">NO</text>
+
+                        <!-- Rule A -->
+                        <rect x="15" y="20" width="115" height="58" rx="8" class="rule-node-box"/>
+                        <text x="72" y="44" text-anchor="middle" class="rule-node-title">Rule A (Income)</text>
+                        <text x="72" y="63" text-anchor="middle" class="rule-node-sub" th:text="'INC > $' + ${#numbers.formatDecimal(thresholds.minIncome/1000, 1, 0)} + 'k'">INC > $50k</text>
+
+                        <!-- Exit A -->
+                        <rect x="15" y="140" width="115" height="44" rx="6" class="rule-exit-box"/>
+                        <text x="72" y="167" text-anchor="middle" class="rule-exit-text">Exit (Reject)</text>
+
+                        <!-- Rule B -->
+                        <rect x="180" y="20" width="105" height="58" rx="8" class="rule-node-box"/>
+                        <text x="232" y="44" text-anchor="middle" class="rule-node-title">Rule B (Car)</text>
+                        <text x="232" y="63" text-anchor="middle" class="rule-node-sub" th:text="'Car < ' + ${thresholds.maxCarRatio} + '%'">Car &lt; 10%</text>
+
+                        <!-- Exit B -->
+                        <rect x="180" y="140" width="105" height="44" rx="6" class="rule-exit-box"/>
+                        <text x="232" y="167" text-anchor="middle" class="rule-exit-text">Exit (Reject)</text>
+
+                        <!-- Rule C -->
+                        <rect x="335" y="20" width="105" height="58" rx="8" class="rule-node-box"/>
+                        <text x="387" y="44" text-anchor="middle" class="rule-node-title">Rule C (Mtg)</text>
+                        <text x="387" y="63" text-anchor="middle" class="rule-node-sub" th:text="'Mtg < ' + ${thresholds.maxMortgageRatio} + '%'">Mtg &lt; 20%</text>
+
+                        <!-- Exit C -->
+                        <rect x="335" y="140" width="105" height="44" rx="6" class="rule-exit-box"/>
+                        <text x="387" y="167" text-anchor="middle" class="rule-exit-text">Exit (Reject)</text>
+
+                        <!-- Rule E -->
+                        <rect x="490" y="20" width="115" height="58" rx="8" class="rule-node-box"/>
+                        <text x="547" y="44" text-anchor="middle" class="rule-node-title">Rule E (Tenure)</text>
+                        <text x="547" y="63" text-anchor="middle" class="rule-node-sub" th:text="'Years ≥ ' + ${thresholds.minTenureYears}">Years ≥ 4</text>
+
+                        <!-- Rule H -->
+                        <rect x="635" y="130" width="110" height="58" rx="8" class="rule-node-box"/>
+                        <text x="690" y="154" text-anchor="middle" class="rule-node-title">Rule H (Debt)</text>
+                        <text x="690" y="173" text-anchor="middle" class="rule-node-sub" th:text="'Debt < ' + ${thresholds.maxOtherDebtRatio} + '%'">Debt &lt; 5%</text>
+
+                        <!-- State F Goal -->
+                        <rect x="785" y="20" width="165" height="65" rx="8" class="rule-state-f-box"/>
+                        <text x="867" y="45" text-anchor="middle" class="rule-state-f-title">STATE F (Approved)</text>
+                        <text x="867" y="67" text-anchor="middle" class="rule-state-f-val" th:text="'Limit: $' + ${#numbers.formatDecimal(thresholds.tier1Limit, 1, 0)}">Limit: $10,000</text>
+
+                        <!-- State I Restricted -->
+                        <rect x="785" y="130" width="165" height="58" rx="8" class="rule-state-i-box"/>
+                        <text x="867" y="154" text-anchor="middle" class="rule-state-i-title">STATE I (Restricted)</text>
+                        <text x="867" y="174" text-anchor="middle" class="rule-state-i-val" th:text="'Limit: $' + ${#numbers.formatDecimal(thresholds.tier2Limit, 1, 0)}">Limit: $3,000</text>
+                    </svg>
+                </div>
+            </section>
+
+            <!-- 2-Column Split: Input Form & Inference Trace -->
+            <section class="grid-cols-12 items-start">
+                <!-- Left 5 Cols: Fact Collection -->
+                <div class="col-span-5 card card-p32">
+                    <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                        <div>
+                            <h2 class="section-title">Applicant Fact Collection</h2>
+                            <p class="label-muted mt-0.5">Financial telemetry inputs for the inference engine</p>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/expert-system/evaluate}" th:object="${evaluationForm}" method="post" class="space-y-4">
+                        <div class="form-group">
+                            <label class="form-label">Applicant Full Name *</label>
+                            <input type="text" class="form-control" th:field="*{applicantName}" placeholder="e.g. Rachel Adams"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('applicantName')}" th:errors="*{applicantName}">Name error</div>
+                        </div>
+
+                        <div class="grid-cols-2">
+                            <div class="form-group">
+                                <label class="form-label">Annual Gross Income ($) *</label>
+                                <input type="number" step="100" class="form-control" th:field="*{annualIncome}"/>
+                                <div class="form-error" th:if="${#fields.hasErrors('annualIncome')}" th:errors="*{annualIncome}">Income error</div>
+                                <span class="label-caption">Rule A (&gt; $<span th:text="${#numbers.formatDecimal(thresholds.minIncome, 1, 0)}">50,000</span>)</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Monthly Car Payment ($) *</label>
+                                <input type="number" step="10" class="form-control" th:field="*{monthlyCarPayment}"/>
+                                <div class="form-error" th:if="${#fields.hasErrors('monthlyCarPayment')}" th:errors="*{monthlyCarPayment}">Car error</div>
+                                <span class="label-caption">Rule B (&lt; <span th:text="${thresholds.maxCarRatio}">10.0</span>% annual)</span>
+                            </div>
+                        </div>
+
+                        <div class="grid-cols-2">
+                            <div class="form-group">
+                                <label class="form-label">Monthly Mortgage / Rent ($) *</label>
+                                <input type="number" step="50" class="form-control" th:field="*{monthlyMortgagePayment}"/>
+                                <div class="form-error" th:if="${#fields.hasErrors('monthlyMortgagePayment')}" th:errors="*{monthlyMortgagePayment}">Mortgage error</div>
+                                <span class="label-caption">Rule C (&lt; <span th:text="${thresholds.maxMortgageRatio}">20.0</span>% annual)</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Years Employed (Tenure) *</label>
+                                <input type="number" min="0" max="60" class="form-control" th:field="*{yearsEmployed}"/>
+                                <div class="form-error" th:if="${#fields.hasErrors('yearsEmployed')}" th:errors="*{yearsEmployed}">Tenure error</div>
+                                <span class="label-caption">Rule E (≥ <span th:text="${thresholds.minTenureYears}">4</span> yrs)</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Monthly Secondary Debt ($) *</label>
+                            <input type="number" step="10" class="form-control" th:field="*{monthlyOtherDebt}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('monthlyOtherDebt')}" th:errors="*{monthlyOtherDebt}">Debt error</div>
+                            <span class="label-caption">Rule H if tenure &lt; 4 yrs (&lt; <span th:text="${thresholds.maxOtherDebtRatio}">5.0</span>%)</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Execute Inference Engine →
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right 7 Cols: Inference Trace & Outcome -->
+                <div class="col-span-7 card card-p32 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <h2 class="section-title">Inference Engine Trace &amp; State</h2>
+                                <p class="label-muted mt-0.5">Step-by-step rule firing audit trail</p>
+                            </div>
+                        </div>
+
+                        <!-- Outcome Banner -->
+                        <div th:if="${latestEvaluation != null}" class="mb-4">
+                            <div th:if="${latestEvaluation.approved}" class="p-4" style="background: var(--bg-surface); border: 1px solid var(--status-green); border-radius: var(--radius);">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="status-indicator mb-1">
+                                            <span class="status-dot dot-green"></span>
+                                            <strong style="color: var(--status-green);">DECISION: APPROVED &bull; State F</strong>
+                                        </div>
+                                        <h3 class="section-title mt-1" th:text="${latestEvaluation.outcomeState}">STATE F: Limit $10,000</h3>
+                                        <div class="label-muted mt-1">
+                                            Applicant: <strong style="color: var(--text-primary);" th:text="${latestEvaluation.applicantName}">Name</strong> · 
+                                            Granted Line: <strong style="color: var(--status-green);" th:text="'$' + ${#numbers.formatDecimal(latestEvaluation.grantedCreditLimit, 1, 0)}">$10,000</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div th:if="${!latestEvaluation.approved}" class="p-4" style="background: var(--bg-surface); border: 1px solid var(--status-red); border-radius: var(--radius);">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="status-indicator mb-1">
+                                            <span class="status-dot dot-red"></span>
+                                            <strong style="color: var(--status-red);">Rejected &bull; Qualification Terminated</strong>
+                                        </div>
+                                        <h3 class="section-title mt-1" th:text="${latestEvaluation.outcomeState}">EXIT: Fails Rule</h3>
+                                        <div class="label-muted mt-1">
+                                            Applicant: <strong style="color: var(--text-primary);" th:text="${latestEvaluation.applicantName}">Name</strong> · 
+                                            Granted Line: <strong style="color: var(--text-primary);">$0</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${latestEvaluation == null}" class="p-4 mb-4 text-center label-muted" style="background: var(--bg-surface-secondary); border-radius: var(--radius); border: 1px solid var(--border-hairline);">
+                            Enter applicant financial facts on the left and click "Execute Inference Engine" to trace forward-chaining rule execution.
+                        </div>
+
+                        <!-- Rule Firing Execution Log -->
+                        <h3 class="section-title mb-2" style="font-size: 13px;">Rule Firing Execution Log</h3>
+                        <pre style="background: var(--bg-canvas); border: 1px solid var(--border-hairline); border-radius: var(--radius); padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; max-height: 300px; overflow-y: auto;"
+                             th:text="${latestEvaluation != null ? latestEvaluation.ruleFiringLog : '=== INFERENCE ENGINE STANDBY ===&#10;Rules initialized: IncomeThresholdRule (A->B), CarPaymentRatioRule (B->C), MortgagePaymentRatioRule (C->D), EmploymentTenureRule (D->E->F/G), SecondaryDebtRatioRule (G->H->F/I).&#10;Awaiting applicant facts...'}">Console Log</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Historical Audit Log -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Operational Credit Evaluation Audit Log</h2>
+                        <p class="label-muted mt-0.5">Historical production inferences and qualification records</p>
+                    </div>
+                    <span class="label-caption" th:text="${evaluationsPage.totalElements} + ' Records'">0 Records</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Applicant</th>
+                                <th>Income</th>
+                                <th>Car</th>
+                                <th>Mortgage</th>
+                                <th>Tenure</th>
+                                <th>Debt</th>
+                                <th>Outcome</th>
+                                <th style="text-align: right;">Granted Line</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${evaluationsPage.content.isEmpty()}">
+                                <td colspan="9" class="text-center py-4 label-muted">No evaluations recorded yet.</td>
+                            </tr>
+                            <tr th:each="e : ${evaluationsPage.content}">
+                                <td class="label-caption" th:text="${#temporals.format(e.evaluationTimestamp, 'yyyy-MM-dd HH:mm')}">Time</td>
+                                <td class="body-medium" style="font-weight: 600;" th:text="${e.applicantName}">Name</td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(e.annualIncome, 1, 0)}">Income</td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(e.monthlyCarPayment, 1, 0)} + '/mo'">Car</td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(e.monthlyMortgagePayment, 1, 0)} + '/mo'">Mtg</td>
+                                <td th:text="${e.yearsEmployed} + ' yrs'">Tenure</td>
+                                <td th:text="'$' + ${#numbers.formatDecimal(e.monthlyOtherDebt, 1, 0)} + '/mo'">Debt</td>
+                                <td>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${e.approved} ? 'dot-green' : 'dot-red'"></span>
+                                        <span class="label-caption" th:text="${e.outcomeState}">State F</span>
+                                    </div>
+                                </td>
+                                <td style="text-align: right; font-weight: 600;"
+                                    th:styleappend="${e.approved} ? 'color: var(--status-green);' : 'color: var(--text-muted);'"
+                                    th:text="'$' + ${#numbers.formatDecimal(e.grantedCreditLimit, 1, 0)}">$10,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-between pt-4 mt-2" style="border-top: 1px solid var(--border-hairline);" th:if="${evaluationsPage.totalPages > 1}">
+                    <span class="label-caption" th:text="'Page ' + (${evaluationsPage.number} + 1) + ' of ' + ${evaluationsPage.totalPages}">Page 1</span>
+                    <div class="flex gap-2">
+                        <a th:href="@{/expert-system(page=${evaluationsPage.number - 1})}" class="btn btn-secondary btn-sm" th:classappend="${evaluationsPage.first ? 'disabled' : ''}">Previous</a>
+                        <a th:href="@{/expert-system(page=${evaluationsPage.number + 1})}" class="btn btn-secondary btn-sm" th:classappend="${evaluationsPage.last ? 'disabled' : ''}">Next</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#expertFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

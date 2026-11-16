@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Configure Knowledge Base Rule Thresholds')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('expert-system')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Rule Parameters')}"></header>
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container" style="max-width: 800px;">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <div>
+                <a th:href="@{/expert-system}" class="label-medium flex items-center gap-1" style="color: var(--text-secondary);">
+                    <span>← Back to Expert System</span>
+                </a>
+            </div>
+
+            <div class="card card-p32">
+                <div class="card-header-clean pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <span class="label-caption" style="text-transform: uppercase;">Knowledge Base Admin</span>
+                        <h1 class="headline-md mt-1">Knowledge Base Rule Engine Parameters</h1>
+                        <p class="label-muted mt-1">
+                            Administer quantitative heuristic cut-offs for forward-chaining rules without recompiling code (Laudon Slides 8-9).
+                        </p>
+                    </div>
+                </div>
+
+                <form th:action="@{/expert-system/thresholds/save}" th:object="${thresholdForm}" method="post" class="space-y-4 mt-6">
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Rule A: Minimum Annual Income ($) *</label>
+                            <input type="number" step="1000" class="form-control" th:field="*{minIncome}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('minIncome')}" th:errors="*{minIncome}">Income error</div>
+                            <span class="label-caption">Baseline: $50,000.00 (Slide 9)</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Rule B: Max Car Payment Ratio (%) *</label>
+                            <input type="number" step="0.5" class="form-control" th:field="*{maxCarRatio}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('maxCarRatio')}" th:errors="*{maxCarRatio}">Car ratio error</div>
+                            <span class="label-caption">Baseline: 10.0% of annual income</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-cols-2">
+                        <div class="form-group">
+                            <label class="form-label">Rule C: Max Mortgage / Rent Ratio (%) *</label>
+                            <input type="number" step="0.5" class="form-control" th:field="*{maxMortgageRatio}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('maxMortgageRatio')}" th:errors="*{maxMortgageRatio}">Mortgage error</div>
+                            <span class="label-caption">Baseline: 20.0% of annual income</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Rule E: Min Employment Tenure (Years) *</label>
+                            <input type="number" min="0" max="20" class="form-control" th:field="*{minTenureYears}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('minTenureYears')}" th:errors="*{minTenureYears}">Tenure error</div>
+                            <span class="label-caption">Baseline: 4 Years</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-cols-3" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Rule H: Max Debt Ratio (%) *</label>
+                            <input type="number" step="0.5" class="form-control" th:field="*{maxOtherDebtRatio}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('maxOtherDebtRatio')}" th:errors="*{maxOtherDebtRatio}">Debt ratio error</div>
+                            <span class="label-caption">Baseline: 5.0%</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">State F: Tier 1 Limit ($) *</label>
+                            <input type="number" step="500" class="form-control" th:field="*{tier1Limit}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('tier1Limit')}" th:errors="*{tier1Limit}">Tier 1 limit error</div>
+                            <span class="label-caption">Baseline: $10,000</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">State I: Tier 2 Limit ($) *</label>
+                            <input type="number" step="500" class="form-control" th:field="*{tier2Limit}"/>
+                            <div class="form-error" th:if="${#fields.hasErrors('tier2Limit')}" th:errors="*{tier2Limit}">Tier 2 limit error</div>
+                            <span class="label-caption">Baseline: $3,000</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4" style="border-top: 1px solid var(--border-hairline);">
+                        <a th:href="@{/expert-system}" class="btn btn-secondary">Cancel</a>
+                        <button th:if="${!isOperations}" type="submit" class="btn btn-primary">
+                            Update Knowledge Base Parameters →
+                        </button>
+                        <button th:if="${isOperations}" type="button" class="btn btn-primary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Updating parameters restricted">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Locked (Read-Only)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html>

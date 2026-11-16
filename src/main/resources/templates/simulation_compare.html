@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Multi-Scenario Comparison Matrix')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('simulation')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Scenario Comparison')}"></header>
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- Header -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <div>
+                        <a th:href="@{/simulation}" class="label-medium flex items-center gap-1 mb-2" style="color: var(--text-secondary);">
+                            <span>← Back to Simulation</span>
+                        </a>
+                    </div>
+                    <h1 class="page-title">Multi-Scenario DSS Comparison Matrix</h1>
+                    <p class="label-muted mt-1">
+                        Evaluate competing strategic hypotheses side-by-side against the enterprise status-quo baseline (Middle Management Trade-off Analysis, Slide 12).
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a th:href="@{/simulation}" class="btn btn-primary">
+                        + New Simulation Run
+                    </a>
+                </div>
+            </section>
+
+            <!-- Scenario Selection Checkbox Form -->
+            <section class="card card-p32">
+                <h2 class="section-title mb-3">Select Scenarios to Compare (Up to 3)</h2>
+                <form th:action="@{/simulation/compare}" method="get" class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex flex-wrap gap-4">
+                        <label th:each="s : ${allSaved}" class="flex items-center gap-2 label-medium" style="cursor: pointer;">
+                            <input type="checkbox" name="ids" th:value="${s.id}"
+                                   th:checked="${selectedScenarios != null and selectedScenarios.contains(s)}">
+                            <span th:text="${s.name}">Scenario Name</span>
+                        </label>
+                        <span th:if="${allSaved.isEmpty()}" class="label-muted">No saved scenarios available yet.</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary">
+                        Compare Selected Scenarios →
+                    </button>
+                </form>
+            </section>
+
+            <!-- Comparison Matrix Table -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Cross-Scenario Sensitivity Matrix</h2>
+                        <p class="label-muted mt-0.5">Comparative strategic tradeoff evaluation</p>
+                    </div>
+                    <span class="label-caption" th:text="${selectedScenarios != null ? selectedScenarios.size() : 0} + ' scenarios selected'">2 scenarios</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 260px;">Strategic / Operational Dimension</th>
+                                <th style="background: var(--bg-surface-secondary); width: 200px;">Baseline (Status Quo)</th>
+                                <th th:each="s : ${selectedScenarios}">
+                                    <span style="color: var(--primary); font-weight: 600;" th:text="${s.name}">Scenario 1</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Header: Levers -->
+                            <tr style="background: var(--bg-surface-secondary);">
+                                <td colspan="5" class="label-medium" style="font-weight: 600; text-transform: uppercase; font-size: 12px;">Input Levers (Adjustments)</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">1. Product Pricing Variation</td>
+                                <td style="background: var(--bg-surface-secondary);">0.0%</td>
+                                <td th:each="s : ${selectedScenarios}" style="font-weight: 500;"
+                                    th:text="${s.priceAdjustmentPct > 0 ? '+' : ''} + ${s.priceAdjustmentPct} + '%'">0%</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">2. Marketing &amp; Brand Budget</td>
+                                <td style="background: var(--bg-surface-secondary);">0.0%</td>
+                                <td th:each="s : ${selectedScenarios}" style="font-weight: 500;"
+                                    th:text="${s.marketingSpendDeltaPct > 0 ? '+' : ''} + ${s.marketingSpendDeltaPct} + '%'">0%</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">3. Raw Material / COGS Shift</td>
+                                <td style="background: var(--bg-surface-secondary);">0.0%</td>
+                                <td th:each="s : ${selectedScenarios}" style="font-weight: 500;"
+                                    th:text="${s.rawMaterialCostDeltaPct > 0 ? '+' : ''} + ${s.rawMaterialCostDeltaPct} + '%'">0%</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">4. Workforce Training Shift</td>
+                                <td style="background: var(--bg-surface-secondary);">0.0%</td>
+                                <td th:each="s : ${selectedScenarios}" style="font-weight: 500;"
+                                    th:text="${s.trainingInvestmentDeltaPct > 0 ? '+' : ''} + ${s.trainingInvestmentDeltaPct} + '%'">0%</td>
+                            </tr>
+
+                            <!-- Header: Scorecard Impacts -->
+                            <tr style="background: var(--bg-surface-secondary);">
+                                <td colspan="5" class="label-medium" style="font-weight: 600; text-transform: uppercase; font-size: 12px;">Projected Scorecard Trajectory</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">Operating Profit Margin</td>
+                                <td style="background: var(--bg-surface-secondary); font-weight: 500;">15.4%</td>
+                                <td th:each="s : ${selectedScenarios}">
+                                    <strong style="color: var(--primary);" th:text="${s.simulatedOperatingMargin} + '%'">16.2%</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">Simulated Net Profit</td>
+                                <td style="background: var(--bg-surface-secondary); font-weight: 500;">$44.5M</td>
+                                <td th:each="s : ${selectedScenarios}">
+                                    <strong th:text="'$' + ${s.simulatedNetProfit} + 'M'">$47.2M</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">Customer Retention Rate</td>
+                                <td style="background: var(--bg-surface-secondary); font-weight: 500;">81.5%</td>
+                                <td th:each="s : ${selectedScenarios}" th:text="${s.simulatedCustomerRetention} + '%'">83.2%</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">Order Fulfillment Cycle</td>
+                                <td style="background: var(--bg-surface-secondary); font-weight: 500;">6.8 days</td>
+                                <td th:each="s : ${selectedScenarios}" th:text="${s.simulatedCycleTime} + ' days'">5.8 days</td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium">Risk Assessment</td>
+                                <td style="background: var(--bg-surface-secondary);">Baseline Reference</td>
+                                <td th:each="s : ${selectedScenarios}">
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${s.riskLevel == 'LOW RISK / OPTIMAL' ? 'dot-green' : (s.riskLevel == 'MODERATE RISK' ? 'dot-amber' : 'dot-red')}"></span>
+                                        <span class="label-caption" th:text="${s.riskLevel}">Low Risk</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html>

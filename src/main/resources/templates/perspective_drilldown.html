@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${perspective.displayName} + ' Drill Down')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar(${perspective.displayName})}"></header>
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <div>
+                        <a th:href="@{/dashboard}" class="label-medium flex items-center gap-1 mb-2" style="color: var(--text-secondary);">
+                            <span>← Back to Balanced Scorecard</span>
+                        </a>
+                    </div>
+                    <h1 class="page-title" th:text="${perspective.displayName}">Financial Perspective</h1>
+                    <p class="label-muted mt-1" th:text="'Strategic Focus: ' + ${perspective.coreQuestion}">
+                        Core Question Focus
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <th:block th:if="${!isOperations}">
+                        <a th:href="@{/kpi/new}" class="btn btn-secondary">
+                            + Add Metric
+                        </a>
+                        <a th:href="@{/decision/new}" class="btn btn-primary">
+                            + Formulate Fix in Simon
+                        </a>
+                    </th:block>
+                    <th:block th:if="${isOperations}">
+                        <button class="btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Target metric creation restricted">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Add Metric (Locked)
+                        </button>
+                    </th:block>
+                </div>
+            </section>
+
+            <!-- Time-Series Analytics Chart Card -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Longitudinal Performance Trend vs Target SLA</h2>
+                        <p class="label-muted mt-0.5">Quarterly telemetry trajectory across fiscal reporting periods</p>
+                    </div>
+                    <span class="label-caption">Trend Analysis</span>
+                </div>
+
+                <div style="height: 260px; position: relative; width: 100%;">
+                    <canvas id="perspectiveTrendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Metrics Breakdown Table Card -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Operational Telemetry Breakdown</h2>
+                        <p class="label-muted mt-0.5" th:text="${kpis.size()} + ' Active Streams'">Streams</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Metric Name</th>
+                                <th>Department</th>
+                                <th>Target SLA</th>
+                                <th>Actual Telemetry</th>
+                                <th>Status</th>
+                                <th>Trend History</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="kpi : ${kpis}">
+                                <td style="font-weight: 600;" th:text="${kpi.code}">FIN-01</td>
+                                <td>
+                                    <div class="body-medium" style="font-weight: 600;" th:text="${kpi.name}">Operating Profit Margin</div>
+                                    <div class="label-caption mt-0.5" th:text="${kpi.description}">Description</div>
+                                </td>
+                                <td class="label-muted" th:text="${kpi.department}">Finance</td>
+                                <td th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">18.0%</td>
+                                <td style="font-weight: 600;" th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">15.4%</td>
+                                <td>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${kpi.status.name() == 'ON_TRACK' ? 'dot-green' : (kpi.status.name() == 'WARNING' ? 'dot-amber' : 'dot-red')}"></span>
+                                        <span class="label-caption" th:text="${kpi.status.name() == 'ON_TRACK' ? 'On Track' : (kpi.status.name() == 'WARNING' ? 'Warning' : 'Critical')}">On Track</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="label-caption" style="font-family: monospace;" th:text="${kpi.historicalTrendCsv}">15.0, 15.2, 15.4</span>
+                                </td>
+                                <td style="text-align: right;">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a th:if="${!isOperations}" th:href="@{'/kpi/edit/' + ${kpi.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                                        <span th:if="${isOperations}" class="badge-locked" title="Operational Role: Target metric editing restricted to Managers">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                            Locked
+                                        </span>
+                                        <a th:if="${!isOperations}" th:href="@{'/decision/new?kpiCode=' + ${kpi.code}}" class="btn-text" style="font-size: 12px;">Fix →</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Linked Decision Initiatives Card -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Active Decision Initiatives for this Dimension</h2>
+                        <p class="label-muted mt-0.5">Herbert Simon problem-solving initiatives linked to this scorecard perspective</p>
+                    </div>
+                    <a th:href="@{/decision/new}" class="btn-text" style="font-size: 13px;">+ New Initiative →</a>
+                </div>
+
+                <div style="display: flex; flex-direction: column;">
+                    <div th:if="${initiatives.isEmpty()}" class="py-6 text-center label-muted">
+                        No active decision initiatives linked to this perspective. Click "+ New Initiative" to launch Stage 1 (Intelligence).
+                    </div>
+
+                    <div th:each="init : ${initiatives}" class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--border-hairline);">
+                        <div>
+                            <span class="label-caption" style="margin-right: 8px;" th:text="${init.relatedKpiCode}">FIN-01</span>
+                            <a th:href="@{'/decision/view/' + ${init.id}}" class="body-medium" style="font-weight: 600;" th:text="${init.title}">Initiative Title</a>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="status-indicator">
+                                <span class="status-dot dot-green"></span>
+                                <span class="label-caption" th:text="${init.currentStage.displayName}">Stage</span>
+                            </div>
+                            <a th:href="@{'/decision/view/' + ${init.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Inspect →</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const labels = ['2025-Q3', '2025-Q4', '2026-Q1', '2026-Q2'];
+        const firstKpi = /*[[${kpis.isEmpty() ? 15.0 : kpis[0].actualValue}]]*/ 15.4;
+        const targetVal = /*[[${kpis.isEmpty() ? 18.0 : kpis[0].targetValue}]]*/ 18.0;
+        const unit = /*[[${kpis.isEmpty() ? '%' : kpis[0].unit}]]*/ "%";
+        const dataPoints = [firstKpi * 0.92, firstKpi * 0.95, firstKpi * 0.98, firstKpi];
+
+        initTrendLineChart('perspectiveTrendChart', labels, dataPoints, targetVal, unit);
+    });
+</script>
+</body>
+</html>

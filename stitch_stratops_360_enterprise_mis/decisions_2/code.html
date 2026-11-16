@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"inverse-primary":"#c3c0ff","on-primary":"#ffffff","on-error-container":"#93000a","surface-container":"#eeeeee","secondary-fixed-dim":"#c0c6db","on-tertiary-fixed":"#351000","on-background":"#1a1c1c","primary-fixed-dim":"#c3c0ff","primary-fixed":"#e2dfff","on-secondary-fixed":"#141b2b","on-error":"#ffffff","tertiary":"#7e3000","on-tertiary-container":"#ffd2be","on-tertiary-fixed-variant":"#7b2f00","outline":"#777587","secondary-fixed":"#dce2f7","surface-container-highest":"#e2e2e2","on-tertiary":"#ffffff","inverse-surface":"#2f3131","on-secondary-container":"#5c6274","tertiary-fixed-dim":"#ffb695","error-container":"#ffdad6","primary-container":"#4f46e5","surface-container-low":"#f3f3f3","on-secondary-fixed-variant":"#404758","background":"#f9f9f9","on-secondary":"#ffffff","secondary-container":"#d9dff5","on-primary-fixed-variant":"#3323cc","surface-container-lowest":"#ffffff","secondary":"#575e70","on-surface-variant":"#464555","tertiary-container":"#a44100","surface-dim":"#dadada","tertiary-fixed":"#ffdbcc","inverse-on-surface":"#f0f1f1","surface":"#f9f9f9","on-primary-container":"#dad7ff","surface-variant":"#e2e2e2","on-surface":"#1a1c1c","surface-tint":"#4d44e3","primary":"#3525cd","error":"#ba1a1a","outline-variant":"#c7c4d8","surface-container-high":"#e8e8e8","surface-bright":"#f9f9f9","on-primary-fixed":"#0f0069"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-2xl":"2.5rem","space-xl":"2rem","margin-mobile":"1rem","space-sm":"0.5rem","space-lg":"1.5rem","margin":"2rem","gutter":"1.5rem","gutter-mobile":"1rem","space-md":"1rem","space-xs":"0.25rem"},"fontFamily":{"metric-lg":["Inter"],"body-default":["Inter"],"page-title":["Inter"],"label-medium":["Inter"],"label-caption":["Inter"],"display-hero-mobile":["Inter"],"page-title-mobile":["Inter"],"section-title":["Inter"],"headline-md":["Inter"],"label-muted":["Inter"],"body-medium":["Inter"],"display-hero":["Inter"]},"fontSize":{"metric-lg":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"400"}],"body-default":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"400"}],"page-title":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"600"}],"label-medium":["13px",{"lineHeight":"18px","letterSpacing":"0.005em","fontWeight":"500"}],"label-caption":["12px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"500"}],"display-hero-mobile":["32px",{"lineHeight":"40px","letterSpacing":"-0.015em","fontWeight":"300"}],"page-title-mobile":["22px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"section-title":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-muted":["13px",{"lineHeight":"18px","letterSpacing":"0.005em","fontWeight":"400"}],"body-medium":["14px",{"lineHeight":"20px","letterSpacing":"0em","fontWeight":"500"}],"display-hero":["40px",{"lineHeight":"48px","letterSpacing":"-0.02em","fontWeight":"300"}]}}}}</script></head><body class="bg-surface font-body-default text-body-default text-on-surface antialiased min-h-screen"><aside class="fixed left-0 top-0 h-full w-[220px] bg-surface-container-lowest border-r border-outline-variant/40 z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 px-5 flex items-center gap-3 border-b border-outline-variant/40"><div class="w-7 h-7 rounded bg-primary-container text-on-primary flex items-center justify-center font-section-title text-section-title font-semibold select-none">S</div><span class="font-body-medium text-body-medium text-on-surface font-semibold tracking-tight">StratOps 360</span></div><nav class="px-3 py-4 space-y-1" data-active-classes="bg-secondary-container text-primary font-body-medium"><a class="flex items-center gap-3 px-3 py-2 rounded-lg font-body-default text-body-default text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="dashboard" href="#dashboard"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Dashboard</span></a><a aria-current="page" class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors bg-secondary-container text-primary font-body-medium" data-path="decisions" href="#decisions"><span class="material-symbols-outlined text-[18px]">alt_route</span><span>Decisions</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg font-body-default text-body-default text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="simulation" href="#simulation"><span class="material-symbols-outlined text-[18px]">tune</span><span>Simulation</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg font-body-default text-body-default text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="expert-system" href="#expert-system"><span class="material-symbols-outlined text-[18px]">psychology</span><span>Expert System</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg font-body-default text-body-default text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="reports" href="#reports"><span class="material-symbols-outlined text-[18px]">description</span><span>Reports</span></a><a class="flex items-center gap-3 px-3 py-2 rounded-lg font-body-default text-body-default text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" data-path="theory-guide" href="#theory-guide"><span class="material-symbols-outlined text-[18px]">menu_book</span><span>Theory Guide</span></a></nav></div><div class="px-4 py-4 border-t border-outline-variant/40 flex items-center justify-between text-secondary"><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-emerald-500"></div><span class="font-label-caption text-label-caption text-secondary">System Online</span></div><span class="font-label-caption text-label-caption text-secondary/60">v2.4</span></div></aside><div class="pl-[220px]"><header class="fixed top-0 left-[220px] right-0 h-16 bg-surface-container-lowest border-b border-outline-variant/40 z-40 px-6 flex items-center justify-between"><div class="flex items-center gap-2 text-secondary font-label-medium text-label-medium"><span>Workspace</span><span class="material-symbols-outlined text-[16px]">chevron_right</span><span class="text-on-surface font-medium">StratOps 360</span></div><div class="flex items-center gap-4"><button aria-label="Search" class="w-9 h-9 rounded-lg flex items-center justify-center text-secondary hover:text-on-surface hover:bg-surface-container-low transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">search</span></button><div class="relative flex items-center"><div class="flex items-center border border-outline-variant/40 rounded-lg px-2.5 py-1.5 bg-surface-container-lowest gap-2"><span class="font-label-caption text-label-caption text-secondary">View as</span><select class="bg-transparent font-label-medium text-label-medium text-on-surface border-none focus:outline-none cursor-pointer pr-1"><option selected="" value="executive">Executive</option><option value="manager">Manager</option><option value="operations">Operations</option></select></div></div><div class="relative"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<div class="px-8 py-8 max-w-[1440px] w-full mx-auto flex flex-col space-y-8">
+<!-- Page Header & Action Row -->
+<section class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
+<div class="flex flex-col space-y-1.5">
+<h1 class="font-page-title text-page-title text-on-surface font-semibold tracking-tight">Decisions</h1>
+<p class="font-body-default text-body-default text-secondary">Active strategic initiatives across decision stages</p>
+</div>
+<div class="flex items-center gap-3">
+<!-- Search Input -->
+<div class="relative w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px] pointer-events-none">search</span>
+<input class="w-full h-10 pl-9 pr-3 rounded-[10px] bg-surface-container-lowest text-on-surface text-body-default font-body-default placeholder:text-secondary focus:outline-none transition-colors border border-outline-variant/40 focus:border-primary-container" placeholder="Search initiatives..." type="text"/>
+</div>
+<!-- Primary Action Button -->
+<button class="h-10 px-4 bg-primary-container hover:bg-primary text-on-primary font-body-medium text-body-medium rounded-[10px] flex items-center gap-2 transition-colors select-none shrink-0" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New Initiative</span>
+</button>
+</div>
+</section>
+<!-- 4-Column Board Layout -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+<!-- 1. Intelligence Column -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center justify-between pb-1 px-1">
+<h2 class="font-section-title text-section-title text-on-surface font-semibold tracking-tight">
+            Intelligence <span class="text-secondary font-normal ml-1">· 3</span>
+</h2>
+</div>
+<div class="flex flex-col space-y-3.5">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#DC2626] shrink-0" title="High Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">PROC-01 · Order Fulfillment</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Order Fulfillment Compression
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                ER
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" title="Medium Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">FIN-01 · Operating Margin</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Operating Profit Margin Optimization
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                MV
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] shrink-0" title="Standard Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">LG-02 · Talent Capacity</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Employee Retention Strategy
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                TK
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+<!-- 2. Design Column -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center justify-between pb-1 px-1">
+<h2 class="font-section-title text-section-title text-on-surface font-semibold tracking-tight">
+            Design <span class="text-secondary font-normal ml-1">· 3</span>
+</h2>
+</div>
+<div class="flex flex-col space-y-3.5">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] shrink-0" title="Standard Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">PROC-01 · Order Fulfillment</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Western Hub Automated Cross-Docking
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                ER
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" title="Medium Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">PROC-03 · Equipment Downtime</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Predictive Maintenance Pilot
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                SL
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] shrink-0" title="Standard Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">LG-04 · Digital Adoption</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Internal Workflow Modernization
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                MV
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+<!-- 3. Choice Column -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center justify-between pb-1 px-1">
+<h2 class="font-section-title text-section-title text-on-surface font-semibold tracking-tight">
+            Choice <span class="text-secondary font-normal ml-1">· 2</span>
+</h2>
+</div>
+<div class="flex flex-col space-y-3.5">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#DC2626] shrink-0" title="High Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">PROC-01 · Order Fulfillment</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Autonomous AGV Fleet Integration
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                ER
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" title="Medium Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">CUST-03 · On-Time Delivery</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Multi-Hub Cross-Dock Sourcing
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                SL
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+<!-- 4. Implementation Column -->
+<div class="flex flex-col space-y-4">
+<div class="flex items-center justify-between pb-1 px-1">
+<h2 class="font-section-title text-section-title text-on-surface font-semibold tracking-tight">
+            Implementation <span class="text-secondary font-normal ml-1">· 3</span>
+</h2>
+</div>
+<div class="flex flex-col space-y-3.5">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] shrink-0" title="Standard Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">PROC-01 · Order Fulfillment</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Automated Sortation Conveyor Pilot
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                ER
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] shrink-0" title="Standard Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">FIN-04 · Cash Flow</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Dynamic Working Capital Hedging
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                MV
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant/40 rounded-[10px] p-5 flex flex-col justify-between h-[164px] transition-all hover:border-outline">
+<div class="flex flex-col space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] shrink-0" title="Medium Priority"></span>
+<span class="font-label-caption text-label-caption text-secondary tracking-normal">CUST-01 · Retention</span>
+</div>
+<h3 class="font-body-medium text-body-medium text-on-surface font-semibold line-clamp-2 leading-snug">
+                Customer Success Playbook
+              </h3>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="w-7 h-7 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-label-caption text-label-caption font-medium select-none">
+                TK
+              </div>
+<button class="font-label-medium text-label-medium text-secondary hover:text-on-surface transition-colors flex items-center gap-1 whitespace-nowrap shrink-0" type="button">
+<span>Next stage</span>
+<span class="text-[14px]">→</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- Cybernetic Feedback Loop (Herbert Simon framework) -->
+<section class="pt-6 pb-2">
+<div class="w-full flex items-center justify-between relative px-2">
+<div class="w-full border-t border-dashed border-outline-variant/50 relative flex items-center justify-center">
+<div class="absolute -top-3.5 bg-surface px-4 flex items-center gap-2 text-secondary">
+<span class="text-[15px]">↺</span>
+<span class="font-label-caption text-label-caption tracking-wider uppercase">CYBERNETIC FEEDBACK LOOP</span>
+<span class="font-label-caption text-label-caption text-secondary/70">· Telemetry returns to Intelligence stage</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div></main></div></body></html>

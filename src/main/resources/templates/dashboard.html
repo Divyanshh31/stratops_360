@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Balanced Scorecard Dashboard')}"></head>
+<body>
+<div class="app-layout">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+        <!-- Topbar -->
+        <header th:replace="~{fragments/layout :: topbar('Dashboard')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="dashboardFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <!-- Flash alerts -->
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <!-- Dashboard Canvas Container -->
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">Balanced Scorecard (ESS Dashboard)</h1>
+                    <p class="label-muted mt-1">
+                        Executive Information System · Strategic performance alignment across Robert Kaplan &amp; David Norton's four operational dimensions.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3 flex-wrap">
+                    <!-- Period Filter Form -->
+                    <form method="get" th:action="@{/dashboard}" class="flex items-center gap-2">
+                        <select name="period" class="form-select" style="width: auto; height: 38px;" onchange="this.form.submit()">
+                            <option value="Current" th:selected="${selectedPeriod == 'Current'}">Current Live Telemetry</option>
+                            <option value="2026-Q2" th:selected="${selectedPeriod == '2026-Q2'}">2026-Q2 (Audited)</option>
+                            <option value="2026-Q1" th:selected="${selectedPeriod == '2026-Q1'}">2026-Q1</option>
+                            <option value="2025-Q4" th:selected="${selectedPeriod == '2025-Q4'}">2025-Q4 Year-End</option>
+                        </select>
+                    </form>
+
+                    <th:block th:if="${!isOperations}">
+                        <a th:href="@{/kpi/new}" class="btn btn-secondary">
+                            + New KPI
+                        </a>
+                        <a th:href="@{/decision/new}" class="btn btn-primary">
+                            + New Initiative
+                        </a>
+                    </th:block>
+                    <th:block th:if="${isOperations}">
+                        <button class="btn btn-secondary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Target KPI creation restricted to Managers">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            + New KPI (Locked)
+                        </button>
+                        <button class="btn btn-primary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Initiative creation restricted to Managers">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            + New Initiative (Locked)
+                        </button>
+                    </th:block>
+                </div>
+            </section>
+
+            <!-- Row 1: Four Stat Blocks -->
+            <section aria-label="Summary KPIs" class="stat-strip">
+                <div class="stat-cell">
+                    <div class="flex items-center justify-between">
+                        <span class="label-muted">Overall Scorecard Health</span>
+                        <span class="live-pulse-dot" title="Live operational telemetry sync"></span>
+                    </div>
+                    <div class="metric-hero mt-1" th:text="${summary['overallHealthScore']} + '%'">91.4%</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-green"></span>
+                        <span class="label-caption">On target (Balanced SLA)</span>
+                    </div>
+                </div>
+
+                <div class="stat-cell">
+                    <div class="flex items-center justify-between">
+                        <span class="label-muted">On Track</span>
+                        <span class="status-dot dot-green" style="width: 5px; height: 5px;"></span>
+                    </div>
+                    <div class="metric-hero mt-1" th:text="${summary['onTrackCount']}">12</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-green"></span>
+                        <span class="label-caption" th:text="${summary['onTrackCount']} + ' objectives meeting SLA'">12 objectives</span>
+                    </div>
+                </div>
+
+                <div class="stat-cell">
+                    <div class="flex items-center justify-between">
+                        <span class="label-muted">Warning</span>
+                        <span class="status-dot dot-amber" style="width: 5px; height: 5px;"></span>
+                    </div>
+                    <div class="metric-hero mt-1" th:text="${summary['warningCount']}">3</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-amber"></span>
+                        <span class="label-caption">Variance elevated (85-95%)</span>
+                    </div>
+                </div>
+
+                <div class="stat-cell">
+                    <div class="flex items-center justify-between">
+                        <span class="label-muted">Critical</span>
+                        <span class="status-dot dot-red" style="width: 5px; height: 5px;"></span>
+                    </div>
+                    <div class="metric-hero mt-1" th:text="${summary['criticalCount']}">1</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-red"></span>
+                        <span class="label-caption">Action required (&lt;85%)</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 2: Split 60/40 (Perspective Equilibrium Radar & Needs Attention) -->
+            <section class="grid-cols-12">
+                <!-- 60% Left Card: Radar Chart -->
+                <div class="col-span-7 card card-p32 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 class="section-title">Perspective Equilibrium</h2>
+                                <p class="label-muted mt-0.5">Performance distribution across operational domains (Slide 10)</p>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="label-caption flex items-center gap-1">
+                                    <span style="width: 8px; height: 1.5px; background: var(--border-subtle); display: inline-block;"></span> Baseline (85%)
+                                </span>
+                                <span class="label-caption flex items-center gap-1" style="color: var(--primary); font-weight: 600;">
+                                    <span style="width: 8px; height: 1.5px; background: var(--primary); display: inline-block;"></span> Current Score
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="position: relative; width: 100%; height: 260px;">
+                            <canvas id="scorecardRadarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 mt-4" style="border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary);">
+                        <span>Target variance tolerance: ±5.0%</span>
+                        <span>Audited: <strong th:text="${selectedPeriod}">Current</strong></span>
+                    </div>
+                </div>
+
+                <!-- 40% Right Card: Needs Attention -->
+                <div class="col-span-5 card card-p32 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <h2 class="section-title">Needs Attention</h2>
+                                <p class="label-muted mt-0.5">Strategic vectors deviating from tolerance</p>
+                            </div>
+                            <span class="label-caption" style="padding: 2px 8px; background: var(--bg-surface-secondary); border-radius: var(--radius-sm);"
+                                  th:text="${summary['warningCount'] + summary['criticalCount']} + ' items'">
+                                4 items
+                            </span>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; max-height: 290px; overflow-y: auto; padding-right: 4px;">
+                            <!-- Critical & Warning KPI list directly from allKpis -->
+                            <th:block th:each="kpi : ${allKpis}">
+                                <div th:if="${kpi != null and (kpi.status.name() == 'CRITICAL' or kpi.status.name() == 'WARNING')}"
+                                     class="flex items-center justify-between py-2.5" style="border-bottom: 1px solid var(--border-hairline);">
+                                    <div style="min-width: 0; flex: 1; padding-right: 12px;">
+                                        <div class="body-medium" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" th:text="${kpi.name}">
+                                            Order Fulfillment Cycle Time
+                                        </div>
+                                        <div class="label-caption mt-0.5">
+                                            <span th:text="${kpi.code}">PROC-01</span> · 
+                                            Actual: <strong th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">4.8 d</strong>
+                                            <span style="color: var(--border-subtle);">/</span>
+                                            Target: <span th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">3.0 d</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <div class="status-indicator">
+                                            <span class="status-dot" th:classappend="${kpi.status.name() == 'CRITICAL'} ? 'dot-red' : 'dot-amber'"></span>
+                                            <span class="label-caption" th:text="${kpi.status.name() == 'CRITICAL'} ? 'Critical' : 'Warning'">Warning</span>
+                                        </div>
+                                        <a th:href="@{/decision/new(kpiCode=${kpi.code})}" class="btn-text" style="font-size: 13px;">
+                                            Fix →
+                                        </a>
+                                    </div>
+                                </div>
+                            </th:block>
+
+                            <!-- Fallback empty state if none are in warning/critical -->
+                            <div th:if="${summary['warningCount'] == 0 and summary['criticalCount'] == 0}" class="py-6 text-center label-muted">
+                                <span class="status-dot dot-green" style="margin-right: 6px;"></span>
+                                All 16 strategic indicators are currently on track!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-3 mt-2">
+                        <a th:href="@{/decision/pipeline}" class="label-medium flex items-center gap-1" style="color: var(--text-secondary);">
+                            <span>View all active strategic initiatives in Simon Pipeline</span>
+                            <span>→</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 3: Four Perspectives (2x2 Grid) -->
+            <section class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="section-title">Scorecard Perspectives</h2>
+                        <p class="label-muted mt-0.5">Robert Kaplan &amp; David Norton's Balanced Framework</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn btn-secondary btn-sm perspective-filter-btn active" onclick="filterPerspective('ALL', this)">All</button>
+                        <button type="button" class="btn btn-secondary btn-sm perspective-filter-btn" onclick="filterPerspective('FINANCIAL', this)">Financial</button>
+                        <button type="button" class="btn btn-secondary btn-sm perspective-filter-btn" onclick="filterPerspective('CUSTOMER', this)">Customer</button>
+                        <button type="button" class="btn btn-secondary btn-sm perspective-filter-btn" onclick="filterPerspective('INTERNAL_PROCESSES', this)">Internal</button>
+                        <button type="button" class="btn btn-secondary btn-sm perspective-filter-btn" onclick="filterPerspective('LEARNING_GROWTH', this)">Learning</button>
+                    </div>
+                </div>
+
+                <div class="grid-cols-2">
+                    <!-- 1. Financial Perspective Card -->
+                    <div class="card perspective-kpi-item" data-perspective="FINANCIAL">
+                        <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <span class="label-caption" style="text-transform: uppercase; letter-spacing: 0.05em;">Dimension 1</span>
+                                <h3 class="section-title mt-0.5">Financial Perspective</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="label-medium" th:text="${summary['financialHealth'] != null ? summary['financialHealth'] : '94.0'} + '% Health'">94% Health</span>
+                                <a th:href="@{/perspective/FINANCIAL}" class="btn-text" style="font-size: 13px;">Drill down →</a>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column;">
+                            <div th:each="kpi : ${financialKpis}" class="kpi-row flex items-center justify-between py-2.5" style="border-bottom: 1px solid var(--border-hairline);">
+                                <div>
+                                    <div class="body-medium" th:text="${kpi.name}">Operating Profit Margin</div>
+                                    <div class="label-caption mt-0.5">
+                                        <span th:text="${kpi.code}">FIN-01</span> · 
+                                        Target: <span th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">18.0 %</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="metric-lg" style="font-size: 18px;" th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">19.2 %</div>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${kpi.status.name() == 'ON_TRACK'} ? 'dot-green' : (${kpi.status.name() == 'WARNING'} ? 'dot-amber' : 'dot-red')"></span>
+                                        <span class="label-caption" th:text="${kpi.status.name() == 'ON_TRACK'} ? 'On Track' : (${kpi.status.name() == 'WARNING'} ? 'Warning' : 'Critical')">On Track</span>
+                                    </div>
+                                    <a th:if="${!isOperations}" th:href="@{'/kpi/edit/' + ${kpi.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                                    <span th:if="${isOperations}" class="badge-locked" title="Operational Role: Target metric editing restricted to Managers">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        Locked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Customer Perspective Card -->
+                    <div class="card perspective-kpi-item" data-perspective="CUSTOMER">
+                        <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <span class="label-caption" style="text-transform: uppercase; letter-spacing: 0.05em;">Dimension 2</span>
+                                <h3 class="section-title mt-0.5">Customer Perspective</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="label-medium" th:text="${summary['customerHealth'] != null ? summary['customerHealth'] : '88.0'} + '% Health'">88% Health</span>
+                                <a th:href="@{/perspective/CUSTOMER}" class="btn-text" style="font-size: 13px;">Drill down →</a>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column;">
+                            <div th:each="kpi : ${customerKpis}" class="kpi-row flex items-center justify-between py-2.5" style="border-bottom: 1px solid var(--border-hairline);">
+                                <div>
+                                    <div class="body-medium" th:text="${kpi.name}">Customer Satisfaction Score (CSAT)</div>
+                                    <div class="label-caption mt-0.5">
+                                        <span th:text="${kpi.code}">CUST-01</span> · 
+                                        Target: <span th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">90.0 %</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="metric-lg" style="font-size: 18px;" th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">92.0 %</div>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${kpi.status.name() == 'ON_TRACK'} ? 'dot-green' : (${kpi.status.name() == 'WARNING'} ? 'dot-amber' : 'dot-red')"></span>
+                                        <span class="label-caption" th:text="${kpi.status.name() == 'ON_TRACK'} ? 'On Track' : (${kpi.status.name() == 'WARNING'} ? 'Warning' : 'Critical')">On Track</span>
+                                    </div>
+                                    <a th:if="${!isOperations}" th:href="@{'/kpi/edit/' + ${kpi.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                                    <span th:if="${isOperations}" class="badge-locked" title="Operational Role: Target metric editing restricted to Managers">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        Locked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Internal Processes Perspective Card -->
+                    <div class="card perspective-kpi-item" data-perspective="INTERNAL_PROCESSES">
+                        <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <span class="label-caption" style="text-transform: uppercase; letter-spacing: 0.05em;">Dimension 3</span>
+                                <h3 class="section-title mt-0.5">Internal Processes</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="label-medium" th:text="${summary['processHealth'] != null ? summary['processHealth'] : '76.0'} + '% Health'">76% Health</span>
+                                <a th:href="@{/perspective/INTERNAL_PROCESSES}" class="btn-text" style="font-size: 13px;">Drill down →</a>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column;">
+                            <div th:each="kpi : ${processKpis}" class="kpi-row flex items-center justify-between py-2.5" style="border-bottom: 1px solid var(--border-hairline);">
+                                <div>
+                                    <div class="body-medium" th:text="${kpi.name}">Order Fulfillment Cycle Time</div>
+                                    <div class="label-caption mt-0.5">
+                                        <span th:text="${kpi.code}">PROC-01</span> · 
+                                        Target: <span th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">3.0 d</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="metric-lg" style="font-size: 18px;" th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">4.8 d</div>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${kpi.status.name() == 'ON_TRACK'} ? 'dot-green' : (${kpi.status.name() == 'WARNING'} ? 'dot-amber' : 'dot-red')"></span>
+                                        <span class="label-caption" th:text="${kpi.status.name() == 'ON_TRACK'} ? 'On Track' : (${kpi.status.name() == 'WARNING'} ? 'Warning' : 'Critical')">Critical</span>
+                                    </div>
+                                    <a th:if="${!isOperations}" th:href="@{'/kpi/edit/' + ${kpi.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                                    <span th:if="${isOperations}" class="badge-locked" title="Operational Role: Target metric editing restricted to Managers">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        Locked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Learning & Growth Perspective Card -->
+                    <div class="card perspective-kpi-item" data-perspective="LEARNING_GROWTH">
+                        <div class="flex items-center justify-between pb-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <span class="label-caption" style="text-transform: uppercase; letter-spacing: 0.05em;">Dimension 4</span>
+                                <h3 class="section-title mt-0.5">Learning &amp; Growth</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="label-medium" th:text="${summary['learningHealth'] != null ? summary['learningHealth'] : '92.0'} + '% Health'">92% Health</span>
+                                <a th:href="@{/perspective/LEARNING_GROWTH}" class="btn-text" style="font-size: 13px;">Drill down →</a>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column;">
+                            <div th:each="kpi : ${learningKpis}" class="kpi-row flex items-center justify-between py-2.5" style="border-bottom: 1px solid var(--border-hairline);">
+                                <div>
+                                    <div class="body-medium" th:text="${kpi.name}">Employee Training Hours</div>
+                                    <div class="label-caption mt-0.5">
+                                        <span th:text="${kpi.code}">LG-01</span> · 
+                                        Target: <span th:text="${kpi.targetValue} + ' ' + ${kpi.unit}">40.0 hrs</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="metric-lg" style="font-size: 18px;" th:text="${kpi.actualValue} + ' ' + ${kpi.unit}">45.0 hrs</div>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${kpi.status.name() == 'ON_TRACK'} ? 'dot-green' : (${kpi.status.name() == 'WARNING'} ? 'dot-amber' : 'dot-red')"></span>
+                                        <span class="label-caption" th:text="${kpi.status.name() == 'ON_TRACK'} ? 'On Track' : (${kpi.status.name() == 'WARNING'} ? 'Warning' : 'Critical')">On Track</span>
+                                    </div>
+                                    <a th:if="${!isOperations}" th:href="@{'/kpi/edit/' + ${kpi.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                                    <span th:if="${isOperations}" class="badge-locked" title="Operational Role: Target metric editing restricted to Managers">
+                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                        Locked
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize React Bits FloatingLines Background
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#dashboardFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+
+        /*[# th:if="${summary != null}"]*/
+        const fin = /*[[${summary['financialHealth'] != null ? summary['financialHealth'] : 94.0}]]*/ 94.0;
+        const cust = /*[[${summary['customerHealth'] != null ? summary['customerHealth'] : 88.0}]]*/ 88.0;
+        const proc = /*[[${summary['processHealth'] != null ? summary['processHealth'] : 76.0}]]*/ 76.0;
+        const learn = /*[[${summary['learningHealth'] != null ? summary['learningHealth'] : 92.0}]]*/ 92.0;
+        initScorecardRadar('scorecardRadarChart', fin, cust, proc, learn);
+        /*[/]*/
+    });
+</script>
+</body>
+</html>

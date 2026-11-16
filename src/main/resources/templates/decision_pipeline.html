@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Herbert Simon Decision Pipeline')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('decisions')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Decisions')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="pipelineFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">Herbert Simon’s Decision-Making Pipeline</h1>
+                    <p class="label-muted mt-1">
+                        Active strategic initiatives across decision stages: <strong>Intelligence &rarr; Design &rarr; Choice &rarr; Implementation</strong> with cybernetic feedback loops (DSS Slide 11).
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <form th:action="@{/decision/pipeline}" method="get" class="search-box">
+                        <span class="search-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        </span>
+                        <input type="text" name="search" placeholder="Search initiatives..." th:value="${searchQuery}" aria-label="Search">
+                    </form>
+
+                    <a th:if="${!isOperations}" th:href="@{/decision/new}" class="btn btn-primary">
+                        + New Initiative
+                    </a>
+                    <button th:if="${isOperations}" class="btn btn-primary" disabled style="opacity: 0.6; cursor: not-allowed;" title="Operational Role: Initiative formulation restricted to Managers">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        + New Initiative (Locked)
+                    </button>
+                </div>
+            </section>
+
+            <!-- Herbert Simon 4-Column Board -->
+            <section class="kanban-board">
+                <!-- 1. INTELLIGENCE -->
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-dot dot-red"></span>
+                            <h2 class="section-title">1. INTELLIGENCE</h2>
+                        </div>
+                        <span class="label-caption" th:text="'· ' + ${stage1.size()}">· 0</span>
+                    </div>
+
+                    <div class="kanban-cards">
+                        <div th:if="${stage1.isEmpty()}" class="card py-6 text-center label-muted" style="border-style: dashed;">
+                            No initiatives in problem discovery.
+                        </div>
+
+                        <article th:each="init : ${stage1}" class="kanban-card">
+                            <div class="flex flex-col space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-dot dot-red"></span>
+                                    <span class="label-caption" th:text="${init.relatedKpiCode} + ' · ' + ${init.perspective.displayName}">PROC-01 · Internal</span>
+                                </div>
+                                <h3 class="body-medium" style="font-weight: 600;" th:text="${init.title}">Initiative Title</h3>
+                                <p class="label-muted" style="font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${init.problemStatement}">
+                                    Problem description
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--border-hairline); margin-top: 12px;">
+                                <div class="label-caption" style="font-weight: 500;" th:text="${init.owner}">Owner</div>
+                                <div class="flex items-center gap-2">
+                                    <a th:href="@{'/decision/view/' + ${init.id}}" class="btn-text" style="font-size: 13px;">Details</a>
+                                    <form th:action="@{'/decision/advance/' + ${init.id}}" method="post">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">
+                                            Move to Design →
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- 2. DESIGN -->
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-dot dot-amber"></span>
+                            <h2 class="section-title">2. DESIGN</h2>
+                        </div>
+                        <span class="label-caption" th:text="'· ' + ${stage2.size()}">· 0</span>
+                    </div>
+
+                    <div class="kanban-cards">
+                        <div th:if="${stage2.isEmpty()}" class="card py-6 text-center label-muted" style="border-style: dashed;">
+                            No initiatives formulating alternatives.
+                        </div>
+
+                        <article th:each="init : ${stage2}" class="kanban-card">
+                            <div class="flex flex-col space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-dot dot-amber"></span>
+                                    <span class="label-caption" th:text="${init.relatedKpiCode} + ' · ' + ${init.alternatives.size()} + ' Alternatives'">KPI · 2 Alts</span>
+                                </div>
+                                <h3 class="body-medium" style="font-weight: 600;" th:text="${init.title}">Initiative Title</h3>
+                                <p class="label-muted" style="font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${init.problemStatement}">
+                                    Evaluating options
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--border-hairline); margin-top: 12px;">
+                                <div class="label-caption" style="font-weight: 500;" th:text="${init.owner}">Owner</div>
+                                <div class="flex items-center gap-2">
+                                    <a th:href="@{'/decision/view/' + ${init.id}}" class="btn-text" style="font-size: 13px;">Model</a>
+                                    <form th:action="@{'/decision/advance/' + ${init.id}}" method="post">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">
+                                            Move to Choice →
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- 3. CHOICE -->
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-dot dot-green"></span>
+                            <h2 class="section-title">3. CHOICE</h2>
+                        </div>
+                        <span class="label-caption" th:text="'· ' + ${stage3.size()}">· 0</span>
+                    </div>
+
+                    <div class="kanban-cards">
+                        <div th:if="${stage3.isEmpty()}" class="card py-6 text-center label-muted" style="border-style: dashed;">
+                            No initiatives awaiting final selection.
+                        </div>
+
+                        <article th:each="init : ${stage3}" class="kanban-card">
+                            <div class="flex flex-col space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-dot dot-green"></span>
+                                    <span class="label-caption" th:text="${init.relatedKpiCode} + ' · +' + ${init.projectedRoi} + '% ROI'">KPI · ROI</span>
+                                </div>
+                                <h3 class="body-medium" style="font-weight: 600;" th:text="${init.title}">Initiative Title</h3>
+                                <p class="label-muted" style="font-size: 12px;" th:if="${init.selectedAlternativeTitle != null}" th:text="'Selected: ' + ${init.selectedAlternativeTitle}">
+                                    Selected alternative
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--border-hairline); margin-top: 12px;">
+                                <div class="label-caption" style="font-weight: 500;" th:text="'$' + ${#numbers.formatDecimal(init.estimatedCost/1000, 1, 0)} + 'k Capex'">Capex</div>
+                                <div class="flex items-center gap-2">
+                                    <a th:href="@{'/decision/view/' + ${init.id}}" class="btn-text" style="font-size: 13px;">Select</a>
+                                    <form th:action="@{'/decision/advance/' + ${init.id}}" method="post">
+                                        <button type="submit" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px; color: var(--status-green);">
+                                            Deploy →
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- 4. IMPLEMENTATION -->
+                <div class="kanban-col">
+                    <div class="kanban-header">
+                        <div class="flex items-center gap-2">
+                            <span class="status-dot dot-green"></span>
+                            <h2 class="section-title">4. IMPLEMENTATION</h2>
+                        </div>
+                        <span class="label-caption" th:text="'· ' + ${stage4.size()}">· 0</span>
+                    </div>
+
+                    <div class="kanban-cards">
+                        <div th:if="${stage4.isEmpty()}" class="card py-6 text-center label-muted" style="border-style: dashed;">
+                            No initiatives currently deployed.
+                        </div>
+
+                        <article th:each="init : ${stage4}" class="kanban-card">
+                            <div class="flex flex-col space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="status-dot dot-green"></span>
+                                    <span class="label-caption" th:text="${init.relatedKpiCode} + ' · Live Telemetry'">PROC-01 · Live</span>
+                                </div>
+                                <h3 class="body-medium" style="font-weight: 600;" th:text="${init.title}">Initiative Title</h3>
+                                <p class="label-muted" style="font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;" th:text="${init.implementationFeedback != null ? init.implementationFeedback : 'Collecting feedback telemetry...'}">
+                                    Feedback
+                                </p>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-3" style="border-top: 1px solid var(--border-hairline); margin-top: 12px;">
+                                <div class="label-caption" style="font-weight: 500;" th:text="${init.owner}">Owner</div>
+                                <a th:href="@{'/decision/view/' + ${init.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">
+                                    Audit Feedback →
+                                </a>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#pipelineFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

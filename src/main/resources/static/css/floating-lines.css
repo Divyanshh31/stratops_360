@@ -1,0 +1,49 @@
+/* ==========================================================================
+   FloatingLines CSS - React Bits Background Component
+   Source: https://reactbits.dev/backgrounds/floating-lines
+   ========================================================================== */
+
+.floating-lines-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.floating-lines-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* FloatingLines Ambient Banner / Dashboard Hero Integration */
+.floating-lines-hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.floating-lines-hero-bg .floating-lines-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.floating-lines-hero-bg .floating-lines-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(9, 11, 16, 0.25) 0%, rgba(9, 11, 16, 0.65) 50%, var(--bg-canvas) 92%);
+  pointer-events: none;
+}
+
+[data-theme="light"] .floating-lines-hero-bg .floating-lines-overlay {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.3) 0%, rgba(248, 250, 252, 0.75) 50%, var(--bg-canvas) 92%);
+}

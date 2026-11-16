@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StratOps 360 &bull; Enterprise Intelligence &amp; Decision Support Platform</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <!-- Dedicated GhostFibers & Homepage CSS -->
+    <link rel="stylesheet" th:href="@{/css/ghost-fibers.css}">
+    <link rel="stylesheet" th:href="@{/css/homepage.css}">
+</head>
+<body class="public-home">
+
+<!-- Background: React Bits GhostFibers WebGL Background -->
+<div class="ghost-fibers-bg-wrap" id="ghostFibersBg" aria-hidden="true">
+    <div class="ghost-fibers-container">
+        <canvas class="ghost-fibers-canvas"></canvas>
+    </div>
+    <div class="ghost-fibers-overlay"></div>
+    <div class="ghost-fibers-vignette"></div>
+</div>
+
+<!-- Main Page Wrapper -->
+<div class="home-page-wrap">
+
+    <!-- Transparent Navigation Bar -->
+    <header class="home-navbar">
+        <div class="home-nav-container">
+            <a th:href="@{/}" class="home-brand">
+                <div class="home-brand-logo">S</div>
+                <span class="home-brand-name">StratOps 360</span>
+            </a>
+
+            <nav>
+                <ul class="home-nav-links">
+                    <li><a href="#hero" class="home-nav-link">Home</a></li>
+                    <li><a href="#platform" class="home-nav-link">Platform</a></li>
+                    <li><a href="#features" class="home-nav-link">Features</a></li>
+                    <li><a href="#intelligence" class="home-nav-link">Intelligence</a></li>
+                    <li><a th:href="@{/theory-guide}" class="home-nav-link">Theory Guide</a></li>
+                    <li><a th:href="@{/swagger-ui.html}" class="home-nav-link" target="_blank">API Docs</a></li>
+                </ul>
+            </nav>
+
+            <div class="home-nav-actions">
+                <a th:href="@{/login}" class="btn-home-ghost">Sign In</a>
+                <a th:href="@{/login}" class="btn-home-primary">
+                    <span>Get Started</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="home-hero" id="hero">
+        <div class="home-hero-content">
+            <div class="hero-trust-badge">
+                <span class="hero-trust-dot"></span>
+                <span>Enterprise Intelligence &bull; Strategic Management &bull; Decision Support</span>
+            </div>
+
+            <h1 class="hero-headline">
+                Transform Data Into<br>
+                <span class="hero-headline-gradient">Strategic Decisions.</span>
+            </h1>
+
+            <p class="hero-description">
+                An intelligent enterprise management and decision support platform that connects business performance, strategic planning, predictive simulations and operational intelligence.
+            </p>
+
+            <div class="hero-cta-group">
+                <a href="#platform" class="hero-cta-primary">
+                    <span>Explore Platform</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+                <a th:href="@{/login}" class="hero-cta-secondary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    <span>Get Started &rarr;</span>
+                </a>
+            </div>
+
+            <!-- Floating Live Telemetry Strip -->
+            <div class="hero-telemetry-bar">
+                <div class="telemetry-pill">
+                    <div class="telemetry-val" style="color: #6EE7B7;">93.8%</div>
+                    <div class="telemetry-label">Scorecard Health SLA</div>
+                </div>
+                <div class="telemetry-pill">
+                    <div class="telemetry-val" style="color: #C4B5FD;">4 Stages</div>
+                    <div class="telemetry-label">Simon Decision Pipeline</div>
+                </div>
+                <div class="telemetry-pill">
+                    <div class="telemetry-val" style="color: #93C5FD;">16 Metrics</div>
+                    <div class="telemetry-label">Multi-Perspective Alignment</div>
+                </div>
+                <div class="telemetry-pill">
+                    <div class="telemetry-val" style="color: #FCA5A5;">0.85 DoF</div>
+                    <div class="telemetry-label">GhostFibers Neural Field</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform Capabilities Section -->
+    <section class="home-section" id="platform">
+        <div class="home-section-header">
+            <span class="home-section-tag">Architecture &amp; Modules</span>
+            <h2 class="home-section-title">Built for Modern Enterprise Decision Governance</h2>
+            <p class="home-section-sub">
+                Designed to bridge Anthony's Management Triangle: empowering strategic executives, tactical managers, and operational units with synchronized live intelligence.
+            </p>
+        </div>
+
+        <div class="capabilities-grid" id="features">
+            <!-- 1. Balanced Scorecard -->
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                </div>
+                <h3 class="capability-title">Balanced Scorecard (ESS Dashboard)</h3>
+                <p class="capability-desc">
+                    Monitor Overall Scorecard Health and organizational performance across financial, customer, internal process, and learning and growth perspectives.
+                </p>
+                <a th:href="@{/login(role='Executive')}" class="capability-link">
+                    <span>View Scorecard</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- 2. Strategic Decision Support -->
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9H6"></path></svg>
+                </div>
+                <h3 class="capability-title">Strategic Decision Support</h3>
+                <p class="capability-desc">
+                    Manage decisions through intelligence, design, choice and implementation based on Herbert Simon's 4-stage decision pipeline.
+                </p>
+                <a th:href="@{/login(role='Manager')}" class="capability-link">
+                    <span>Inspect Pipeline</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- 3. What-If Simulation -->
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line></svg>
+                </div>
+                <h3 class="capability-title">What-If Simulation</h3>
+                <p class="capability-desc">
+                    Explore business scenarios and evaluate possible outcomes with multi-variable pricing, marketing, and cost sensitivity analysis.
+                </p>
+                <a th:href="@{/login(role='Manager')}" class="capability-link">
+                    <span>Simulate Scenarios</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- 4. AI Expert System -->
+            <div class="capability-card" id="intelligence">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"></path></svg>
+                </div>
+                <h3 class="capability-title">AI Expert System</h3>
+                <p class="capability-desc">
+                    Evaluate financial information using a rule-based inference engine with forward-chaining rule topology and step-by-step firing traces.
+                </p>
+                <a th:href="@{/login(role='Manager')}" class="capability-link">
+                    <span>Run Inference</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- 5. Performance Analytics -->
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                </div>
+                <h3 class="capability-title">Performance Analytics</h3>
+                <p class="capability-desc">
+                    Monitor KPIs, trends, targets and organizational performance with dynamic audit logging and granular perspective drill-downs.
+                </p>
+                <a th:href="@{/login(role='Manager')}" class="capability-link">
+                    <span>Analyze Metrics</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- 6. Enterprise Reporting -->
+            <div class="capability-card">
+                <div class="capability-icon-wrap">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                </div>
+                <h3 class="capability-title">Enterprise Reporting</h3>
+                <p class="capability-desc">
+                    Generate meaningful reports, regulatory audit compliance trails, and actionable insights with instantaneous multi-format CSV exports.
+                </p>
+                <a th:href="@{/login(role='Manager')}" class="capability-link">
+                    <span>Export Reports</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Banner -->
+    <section class="home-final-cta" id="about">
+        <div class="cta-banner-box">
+            <h2 class="cta-banner-title">Make Smarter Decisions. Build Better Strategies.</h2>
+            <p class="cta-banner-sub">
+                Connect your business telemetry to Herbert Simon's strategic decision pipelines and Kaplan-Norton Balanced Scorecards.
+            </p>
+            <div>
+                <a th:href="@{/login}" class="hero-cta-primary" style="padding: 16px 42px; font-size: 17px;">
+                    <span>Access StratOps 360</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="home-footer">
+        <div class="home-footer-inner">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="home-brand-logo" style="width: 28px; height: 28px; font-size: 14px;">S</div>
+                <span><strong>StratOps 360</strong> &bull; Enterprise Decision Support System &bull; SRMIST CSE</span>
+            </div>
+
+            <div class="home-footer-links">
+                <a th:href="@{/theory-guide}">Curriculum Guide</a>
+                <a th:href="@{/swagger-ui.html}" target="_blank">OpenAPI Docs</a>
+                <a th:href="@{/login}">Personnel Sign In</a>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+<!-- Vanilla React Bits GhostFibers Engine -->
+<script th:src="@{/js/ghost-fibers.js}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize React Bits GhostFibers with the exact requested visual settings
+        if (window.initGhostFibers) {
+            window.initGhostFibers('#ghostFibersBg', {
+                glowColor: '#8b5cf6',
+                layers: 3,
+                twist: 1.2,
+                threads: 72,
+                fiberStyle: 'dots',
+                depthOfField: 0.85,
+                hoverEffect: 'focus',
+                intro: true,
+                mouseInteraction: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' | StratOps 360 MIS'">StratOps 360</title>
+    <!-- Calm Editorial Enterprise CSS (Pure Hand-Crafted, No CDN) -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <!-- Local Chart.js bundle (No CDN) -->
+    <script th:src="@{/js/chart.umd.min.js}"></script>
+    <script th:src="@{/js/charts.js}"></script>
+    <script th:src="@{/js/app.js}"></script>
+</head>
+<body>
+<!-- Navbar fragment fallback forwarding to layout components -->
+<nav th:fragment="navbar" style="display:none;"></nav>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('BI Parameterized Reports')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('reports')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Reports')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="reportsFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">Business Intelligence (BI) Parameterized Reports</h1>
+                    <p class="label-muted mt-1">
+                        Multi-dimensional slicing and dicing across enterprise departments, perspectives, and compliance states (OLAP Slicing, Slide 12).
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a th:href="@{/reports/export-csv(department=${selectedDept},perspective=${selectedPerspective},status=${selectedStatus})}"
+                       class="btn btn-primary">
+                        Download CSV Export →
+                    </a>
+                    <button type="button" onclick="window.print()" class="btn btn-secondary">
+                        Print / PDF
+                    </button>
+                </div>
+            </section>
+
+            <!-- Parameter Filter Card -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Parameterized Filtering Controls</h2>
+                        <p class="label-muted mt-0.5">Filter telemetry attributes across analytical dimensions</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/reports}" method="get" class="grid-cols-4 items-end">
+                    <div class="form-group">
+                        <label class="form-label">Department Dimension</label>
+                        <select class="form-select" name="department">
+                            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d.equalsIgnoreCase(selectedDept)}">Dept</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Scorecard Perspective</label>
+                        <select class="form-select" name="perspective">
+                            <option value="ALL" th:selected="${selectedPerspective.equalsIgnoreCase('ALL')}">-- All Perspectives --</option>
+                            <option th:each="p : ${perspectives}" th:value="${p.name()}" th:text="${p.displayName}" th:selected="${p.name().equalsIgnoreCase(selectedPerspective)}">Perspective</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Operational Status</label>
+                        <select class="form-select" name="status">
+                            <option value="ALL" th:selected="${selectedStatus.equalsIgnoreCase('ALL')}">-- All Statuses --</option>
+                            <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s.label}" th:selected="${s.name().equalsIgnoreCase(selectedStatus)}">Status</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-1">Apply Filter</button>
+                        <a th:href="@{/reports}" class="btn btn-secondary">Reset</a>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Summary Stat Strip -->
+            <section class="stat-strip">
+                <div class="stat-cell">
+                    <span class="label-muted">Filtered Metrics</span>
+                    <div class="metric-hero mt-1" th:text="${kpis.size()}">16</div>
+                    <span class="label-caption mt-2">Active telemetry</span>
+                </div>
+
+                <div class="stat-cell">
+                    <span class="label-muted">Average Achievement</span>
+                    <div class="metric-hero mt-1" style="color: var(--primary);" th:text="${avgAchievement} + '%'">92.4%</div>
+                    <span class="label-caption mt-2">Scorecard index</span>
+                </div>
+
+                <div class="stat-cell">
+                    <span class="label-muted">Critical Discrepancies</span>
+                    <div class="metric-hero mt-1" style="color: var(--status-red);" th:text="${criticalCount}">4</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-red"></span>
+                        <span class="label-caption">Escalation required</span>
+                    </div>
+                </div>
+
+                <div class="stat-cell">
+                    <span class="label-muted">On-Track Compliance</span>
+                    <div class="metric-hero mt-1" style="color: var(--status-green);" th:text="${onTrackCount}">8</div>
+                    <div class="status-indicator mt-2">
+                        <span class="status-dot dot-green"></span>
+                        <span class="label-caption">Meeting targets</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Grid -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Production Report Output</h2>
+                        <p class="label-muted mt-0.5">Live records streaming from H2 data warehouse</p>
+                    </div>
+                    <span class="label-caption" th:text="${kpis.size()} + ' records displayed'">16 records</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Metric Name</th>
+                                <th>Perspective</th>
+                                <th>Department</th>
+                                <th>Target</th>
+                                <th>Actual</th>
+                                <th>Achievement</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${kpis.isEmpty()}">
+                                <td colspan="8" class="text-center py-6 label-muted">
+                                    No telemetry streams match the specified parameter criteria.
+                                </td>
+                            </tr>
+                            <tr th:each="k : ${kpis}">
+                                <td style="font-weight: 600; color: var(--text-primary);" th:text="${k.code}">FIN-01</td>
+                                <td class="body-medium" th:text="${k.name}">Operating Profit Margin</td>
+                                <td class="label-caption" th:text="${k.perspective.displayName}">Financial</td>
+                                <td class="label-caption" th:text="${k.department}">Finance</td>
+                                <td th:text="${k.targetValue} + ' ' + ${k.unit}">18.0%</td>
+                                <td style="font-weight: 600;" th:text="${k.actualValue} + ' ' + ${k.unit}">15.4%</td>
+                                <td style="font-weight: 500;" th:text="${#numbers.formatDecimal(k.achievementRatio, 1, 1)} + '%'">92.0%</td>
+                                <td>
+                                    <div class="status-indicator">
+                                        <span class="status-dot" th:classappend="${k.status.name() == 'ON_TRACK' ? 'dot-green' : (k.status.name() == 'WARNING' ? 'dot-amber' : 'dot-red')}"></span>
+                                        <span class="label-caption" th:text="${k.status.name() == 'ON_TRACK' ? 'On Track' : (k.status.name() == 'WARNING' ? 'Warning' : 'Critical')}">On Track</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#reportsFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

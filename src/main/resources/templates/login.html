@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personnel Sign In &bull; StratOps 360 Enterprise</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <!-- Dedicated GhostFibers & Homepage CSS -->
+    <link rel="stylesheet" th:href="@{/css/ghost-fibers.css}">
+    <link rel="stylesheet" th:href="@{/css/homepage.css}">
+</head>
+<body class="auth-page">
+
+<!-- Background: React Bits GhostFibers WebGL Background -->
+<div class="ghost-fibers-bg-wrap" id="ghostFibersAuthBg" aria-hidden="true">
+    <div class="ghost-fibers-container">
+        <canvas class="ghost-fibers-canvas"></canvas>
+    </div>
+    <div class="ghost-fibers-overlay"></div>
+    <div class="ghost-fibers-vignette"></div>
+</div>
+
+<!-- Main Page Wrapper -->
+<div class="auth-page-wrap">
+
+    <!-- Transparent Mini Navbar -->
+    <header class="home-navbar" style="border-bottom-color: rgba(139, 92, 246, 0.12);">
+        <div class="home-nav-container">
+            <a th:href="@{/}" class="home-brand">
+                <div class="home-brand-logo">S</div>
+                <span class="home-brand-name">StratOps 360</span>
+            </a>
+
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <a th:href="@{/}" class="btn-home-ghost" style="padding: 7px 14px; font-size: 13px;">
+                    &larr; Back to Home
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Split-Screen Login Container -->
+    <main class="auth-page-container">
+        <div class="auth-split-wrapper">
+
+            <!-- Left Side: Platform Narrative & Capability Highlights -->
+            <div class="auth-brand-showcase">
+                <div class="auth-logo-badge">S</div>
+                <h1 class="auth-hero-heading">
+                    Intelligence That<br>
+                    <span style="background: linear-gradient(135deg, #FFFFFF 30%, #C4B5FD 75%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Drives Strategy.</span>
+                </h1>
+                <p class="auth-hero-desc">
+                    Connect enterprise operational facts to high-level decision support pipelines. Seamlessly transition between strategic vision, tactical governance, and automated inferencing.
+                </p>
+
+                <div class="auth-feature-list">
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        </div>
+                        <div class="auth-feature-text">Strategic Performance Intelligence</div>
+                    </div>
+
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9H6"></path></svg>
+                        </div>
+                        <div class="auth-feature-text">Data-Driven Decision Support</div>
+                    </div>
+
+                    <div class="auth-feature-item">
+                        <div class="auth-feature-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                        </div>
+                        <div class="auth-feature-text">Enterprise Business Analytics</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Glassmorphism Login Card -->
+            <div class="auth-glass-card">
+                <div class="auth-card-header">
+                    <span style="color: var(--home-primary-accent); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; display: block; margin-bottom: 6px;">Enterprise Portal</span>
+                    <h2 class="auth-card-title">Welcome Back</h2>
+                    <p class="auth-card-sub">Select a demo role or enter your personnel credentials below.</p>
+                </div>
+
+                <!-- One-Click Demo Role Switcher Tabs -->
+                <div class="demo-role-tabs">
+                    <div class="demo-tab-btn" id="tab-executive" onclick="selectDemoRole('executive')">
+                        <span>Executive</span>
+                        <span class="demo-tab-tier">Strategic (ESS)</span>
+                    </div>
+                    <div class="demo-tab-btn active" id="tab-manager" onclick="selectDemoRole('manager')">
+                        <span>Manager</span>
+                        <span class="demo-tab-tier">Tactical (MIS)</span>
+                    </div>
+                    <div class="demo-tab-btn" id="tab-operations" onclick="selectDemoRole('operations')">
+                        <span>Operations</span>
+                        <span class="demo-tab-tier">Routine (TPS)</span>
+                    </div>
+                </div>
+
+                <!-- Error and Logout Alerts -->
+                <div th:if="${loginError}" class="auth-alert-error" role="alert">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                    <span th:text="${loginError}">Invalid credentials. Please verify your Login ID and Password.</span>
+                </div>
+
+                <div th:if="${logoutMessage}" class="auth-alert-success" role="status">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <span th:text="${logoutMessage}">You have been signed out successfully.</span>
+                </div>
+
+                <!-- Authentication Form -->
+                <form th:action="@{/login}" method="post" id="loginForm">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="auth-form-group">
+                        <label for="usernameInput" class="auth-form-label">
+                            <span>Personnel Login ID</span>
+                            <span style="font-size: 11px; color: var(--home-text-muted);">Required</span>
+                        </label>
+                        <div class="auth-input-wrap">
+                            <input type="text" id="usernameInput" name="username" class="auth-input" value="manager" required autocomplete="username" placeholder="e.g. manager, executive">
+                        </div>
+                    </div>
+
+                    <div class="auth-form-group">
+                        <div class="auth-form-label">
+                            <label for="passwordInput">Password</label>
+                            <span style="font-size: 11px; color: var(--home-highlight);" id="passHint">Default: manager123</span>
+                        </div>
+                        <div class="auth-input-wrap">
+                            <input type="password" id="passwordInput" name="password" class="auth-input" value="manager123" required autocomplete="current-password" placeholder="Enter password">
+                            <button type="button" class="auth-password-toggle" id="togglePasswordBtn" aria-label="Toggle password visibility">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="eyeIcon">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 12px;">
+                        <label style="display: flex; align-items: center; gap: 8px; color: var(--home-text-secondary); cursor: pointer;">
+                            <input type="checkbox" name="remember-me" style="accent-color: var(--home-primary-accent); border-radius: 4px;">
+                            <span>Remember this terminal</span>
+                        </label>
+                        <a th:href="@{/theory-guide}" style="color: var(--home-secondary-accent); text-decoration: none;">Curriculum Reference &rarr;</a>
+                    </div>
+
+                    <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">
+                        <span>Sign In to StratOps 360</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </form>
+
+                <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(139, 92, 246, 0.16); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--home-text-muted);">
+                    <a th:href="@{/dashboard}" style="color: var(--home-secondary-accent); text-decoration: underline;">&larr; Access Live Dashboard</a>
+                    <span>Anthony's Triangle Mode</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- Vanilla React Bits GhostFibers Engine -->
+<script th:src="@{/js/ghost-fibers.js}"></script>
+<script>
+    // Demo accounts for instant credential pre-fill
+    const demoAccounts = {
+        executive: { username: 'executive', pass: 'executive123' },
+        manager: { username: 'manager', pass: 'manager123' },
+        operations: { username: 'operations', pass: 'operations123' }
+    };
+
+    function selectDemoRole(role) {
+        document.querySelectorAll('.demo-tab-btn').forEach(btn => btn.classList.remove('active'));
+        const tab = document.getElementById('tab-' + role);
+        if (tab) tab.classList.add('active');
+
+        const acc = demoAccounts[role];
+        if (acc) {
+            document.getElementById('usernameInput').value = acc.username;
+            document.getElementById('passwordInput').value = acc.pass;
+            document.getElementById('passHint').textContent = 'Default: ' + acc.pass;
+        }
+    }
+
+    // Password visibility toggle
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('togglePasswordBtn');
+        const passInput = document.getElementById('passwordInput');
+        if (toggleBtn && passInput) {
+            toggleBtn.addEventListener('click', function () {
+                const isPass = passInput.type === 'password';
+                passInput.type = isPass ? 'text' : 'password';
+                toggleBtn.style.color = isPass ? 'var(--home-primary-accent)' : 'var(--home-text-muted)';
+            });
+        }
+
+        // Initialize React Bits GhostFibers with exact requested settings
+        if (window.initGhostFibers) {
+            window.initGhostFibers('#ghostFibersAuthBg', {
+                glowColor: '#8b5cf6',
+                layers: 3,
+                twist: 1.2,
+                threads: 72,
+                fiberStyle: 'dots',
+                depthOfField: 0.85,
+                hoverEffect: 'focus',
+                intro: true,
+                mouseInteraction: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

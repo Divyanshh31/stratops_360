@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('MIS Theoretical Foundations')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('theory-guide')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Theory Guide')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="theoryFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">MIS Curriculum Mapping &amp; Slide Guide</h1>
+                    <p class="label-muted mt-1">
+                        Direct academic implementation mapping to Kenneth C. Laudon &amp; Herbert A. Simon’s Management Information Systems syllabus.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="launchVivaTour(0)" class="btn btn-primary">
+                        Launch Guided Viva Demo Tour →
+                    </button>
+                    <a th:href="@{/dashboard}" class="btn btn-secondary">
+                        View Scorecard
+                    </a>
+                </div>
+            </section>
+
+            <!-- Theory Mapping Table Card -->
+            <section class="card card-p32">
+                <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                    <div>
+                        <h2 class="section-title">Theory-to-Implementation Mapping Table</h2>
+                        <p class="label-muted mt-0.5">Syllabus alignment reference for academic vivas and practical exams</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Theoretical Concept</th>
+                                <th>Slide Reference</th>
+                                <th>System Class</th>
+                                <th>Software Implementation</th>
+                                <th style="text-align: right;">Interactive Route</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">Balanced Scorecard (BSC)</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--primary); font-weight: 500;">Unit 5 / Slide 10, 13–14</span>
+                                </td>
+                                <td class="label-muted">Executive / ESS</td>
+                                <td class="label-muted">Executive 4-Perspective Radar Equilibrium, Weighted SLA Health Score, Trend Sparklines</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/dashboard}" class="btn-text" style="font-size: 13px;">View Scorecard →</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">Herbert Simon's 4 Decision Stages</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--primary); font-weight: 500;">Unit 5 / Slide 4, 11</span>
+                                </td>
+                                <td class="label-muted">DSS Framework</td>
+                                <td class="label-muted">Kanban Pipeline with transition guards: 1. Intelligence &rarr; 2. Design &rarr; 3. Choice &rarr; 4. Implementation &amp; Feedback</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/decision/pipeline}" class="btn-text" style="font-size: 13px;">View Pipeline →</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">What-If Sensitivity Simulation</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--status-amber); font-weight: 500;">Unit 5 / Slide 12</span>
+                                </td>
+                                <td class="label-muted">Middle Mgmt / DSS</td>
+                                <td class="label-muted">Dual-range sensitivity sliders (Price, Marketing, Cost, Training), Scenario persistence, 3-way matrix</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/simulation}" class="btn-text" style="font-size: 13px;">Launch DSS →</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">Rule-Based Expert System</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--status-green); font-weight: 500;">Unit 5 / Slide 8–9</span>
+                                </td>
+                                <td class="label-muted">Operational / TPS</td>
+                                <td class="label-muted">Forward-chaining inference engine with dynamic SVG firing path, inference trace, runtime threshold tuning</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/expert-system}" class="btn-text" style="font-size: 13px;">Launch TPS →</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">Business Intelligence (BI) Analytics</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--primary); font-weight: 500;">Unit 5 / Slide 12</span>
+                                </td>
+                                <td class="label-muted">Enterprise Reporting</td>
+                                <td class="label-muted">Parameterized slice-and-dice across department, perspective, and operational status; CSV streaming</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/reports}" class="btn-text" style="font-size: 13px;">View Reports →</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="body-medium" style="font-weight: 600;">3-Tier Management Hierarchy</td>
+                                <td>
+                                    <span class="label-caption" style="color: var(--primary); font-weight: 500;">Unit 5 / Slide 10</span>
+                                </td>
+                                <td class="label-muted">Enterprise Architecture</td>
+                                <td class="label-muted">Dynamic role switching (Senior ESS, Middle DSS, Operational TPS) with contextual navigation</td>
+                                <td style="text-align: right;">
+                                    <a th:href="@{/dashboard}" class="btn-text" style="font-size: 13px;">Test Roles →</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#theoryFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+    });
+</script>
+</body>
+</html>

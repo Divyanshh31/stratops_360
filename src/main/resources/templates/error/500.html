@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('500 - Server Error')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Server Error')}"></header>
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container" style="max-width: 600px; text-align: center; margin-top: 40px;">
+            <div class="card card-p32">
+                <div class="status-indicator mb-3" style="justify-content: center;">
+                    <span class="status-dot dot-red"></span>
+                    <span class="label-caption" style="text-transform: uppercase;">HTTP 500</span>
+                </div>
+                <h1 class="page-title mb-2">Internal Engine Error</h1>
+                <p class="label-muted mb-6" style="line-height: 1.6;"
+                   th:text="${errorMessage != null ? errorMessage : 'An unexpected exception occurred while processing this analytical request. Operational integrity has been safeguarded.'}">
+                    An unexpected error occurred.
+                </p>
+                <div class="flex justify-center gap-3">
+                    <a th:href="@{/dashboard}" class="btn btn-primary">
+                        Return to Dashboard →
+                    </a>
+                    <a th:href="@{/theory-guide}" class="btn btn-secondary">
+                        Theory Guide
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html>

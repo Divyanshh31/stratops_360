@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Global Search Results')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('dashboard')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Search Results')}"></header>
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <div>
+                        <a th:href="@{/dashboard}" class="label-medium flex items-center gap-1 mb-2" style="color: var(--text-secondary);">
+                            <span>← Back to Dashboard</span>
+                        </a>
+                    </div>
+                    <h1 class="page-title">Global Enterprise Search</h1>
+                    <p class="label-muted mt-1" th:text="'Search query: \'' + ${query} + '\''">
+                        Search query results across all subsystems
+                    </p>
+                </div>
+            </section>
+
+            <!-- Search Input Box -->
+            <section class="card card-p32">
+                <form th:action="@{/search}" method="get" class="flex gap-3">
+                    <input type="text" name="q" class="form-control" placeholder="Search across KPIs, codes, departments, problem statements..." th:value="${query}">
+                    <button type="submit" class="btn btn-primary" style="padding: 0 24px;">Search</button>
+                </form>
+            </section>
+
+            <!-- 2 Columns: Matching KPIs & Matching Decisions -->
+            <section class="grid-cols-2 items-start">
+                <!-- Matching KPIs -->
+                <div class="card card-p32">
+                    <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                        <div>
+                            <h2 class="section-title">Matching Operational KPIs</h2>
+                            <p class="label-muted mt-0.5">Metrics found in live Scorecard repository</p>
+                        </div>
+                        <span class="label-caption" th:text="${matchingKpis != null ? matchingKpis.size() : 0} + ' Found'">0 Found</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <div th:if="${matchingKpis == null or matchingKpis.isEmpty()}" class="py-6 text-center label-muted">
+                            No KPIs matched the query keyword.
+                        </div>
+
+                        <div th:each="k : ${matchingKpis}" class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <span class="label-caption" style="margin-right: 6px;" th:text="${k.code}">CODE</span>
+                                <strong class="body-medium" th:text="${k.name}">Metric Name</strong>
+                                <span class="label-muted" th:text="'(' + ${k.department} + ')'">(Dept)</span>
+                                <div class="label-caption mt-0.5" th:text="${k.description}">Description</div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="status-indicator">
+                                    <span class="status-dot" th:classappend="${k.status.name() == 'ON_TRACK' ? 'dot-green' : (k.status.name() == 'WARNING' ? 'dot-amber' : 'dot-red')}"></span>
+                                    <span class="label-caption" th:text="${k.status.label}">Status</span>
+                                </div>
+                                <a th:href="@{'/kpi/edit/' + ${k.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Matching Decision Initiatives -->
+                <div class="card card-p32">
+                    <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                        <div>
+                            <h2 class="section-title">Matching Herbert Simon Initiatives</h2>
+                            <p class="label-muted mt-0.5">Problem-solving initiatives across pipeline stages</p>
+                        </div>
+                        <span class="label-caption" th:text="${matchingInitiatives != null ? matchingInitiatives.size() : 0} + ' Found'">0 Found</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <div th:if="${matchingInitiatives == null or matchingInitiatives.isEmpty()}" class="py-6 text-center label-muted">
+                            No decision initiatives matched the query keyword.
+                        </div>
+
+                        <div th:each="init : ${matchingInitiatives}" class="flex items-center justify-between py-3" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <strong class="body-medium" th:text="${init.title}">Initiative Title</strong>
+                                <div class="label-caption mt-0.5">
+                                    <span th:text="${init.relatedKpiCode}">PROC-01</span> · 
+                                    Lead: <span th:text="${init.owner}">Owner</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="status-indicator">
+                                    <span class="status-dot dot-green"></span>
+                                    <span class="label-caption" th:text="${init.currentStage.stageName}">Stage</span>
+                                </div>
+                                <a th:href="@{'/decision/view/' + ${init.id}}" class="btn btn-secondary btn-sm" style="height: 28px; padding: 0 8px; font-size: 12px;">Inspect →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+</body>
+</html>

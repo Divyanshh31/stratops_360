@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('What-If Scenario DSS Simulator')}"></head>
+<body>
+<div class="app-layout">
+    <div th:replace="~{fragments/layout :: sidebar('simulation')}"></div>
+    <div th:replace="~{fragments/layout :: overlay}"></div>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/layout :: topbar('Simulation')}"></header>
+
+        <!-- React Bits FloatingLines Ambient Hero Canvas -->
+        <div class="floating-lines-hero-bg" id="simulationFloatingLines" aria-hidden="true">
+            <div class="floating-lines-container">
+                <canvas class="floating-lines-canvas"></canvas>
+            </div>
+            <div class="floating-lines-overlay"></div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: toasts}"></div>
+
+        <main class="content-container">
+            <!-- MIS Role Level Banner -->
+            <div th:replace="~{fragments/layout :: roleBanner}"></div>
+
+            <!-- Header Section -->
+            <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+                <div>
+                    <h1 class="page-title">Interactive "What-If" Scenario Simulator</h1>
+                    <p class="label-muted mt-1">
+                        Decision Support System (DSS) &bull; Dynamic econometric sensitivity forecasting across interdependent pricing, marketing, cost, and human capital levers (Slide 12).
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a th:href="@{/simulation/compare}" class="btn btn-secondary">
+                        Compare Scenarios Matrix →
+                    </a>
+                </div>
+            </section>
+
+            <!-- Main Layout: Left Sliders, Right Results -->
+            <section class="grid-cols-12 items-start">
+                <!-- Left 5 Columns: Levers Form -->
+                <div class="col-span-5 card card-p32">
+                    <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                        <div>
+                            <h2 class="section-title">Strategic Levers</h2>
+                            <p class="label-muted mt-0.5">Adjust inputs to simulate ripple effects</p>
+                        </div>
+                        <button type="button" class="btn btn-ghost btn-sm" onclick="resetSliders()">Reset</button>
+                    </div>
+
+                    <form th:action="@{/simulation/run}" th:object="${simulationForm}" method="post" id="simulationForm" class="space-y-4">
+                        <div class="form-group">
+                            <label class="form-label">Scenario Identifier *</label>
+                            <input type="text" class="form-control" th:field="*{scenarioName}" required placeholder="e.g. Aggressive Price Expansion Q3"/>
+                        </div>
+
+                        <!-- Lever 1: Pricing -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label class="form-label mb-0">1. Product Pricing Variation</label>
+                                <span class="label-medium" style="color: var(--primary);" id="valPrice"
+                                      th:text="${simulationForm.priceAdjustmentPct != null ? (simulationForm.priceAdjustmentPct > 0 ? '+' : '') + simulationForm.priceAdjustmentPct + '%' : '0%'}">0%</span>
+                            </div>
+                            <input type="range" class="range-slider" min="-30" max="30" step="1" th:field="*{priceAdjustmentPct}" id="rangePrice"
+                                   oninput="document.getElementById('valPrice').innerText = (this.value > 0 ? '+' : '') + this.value + '%'"/>
+                            <div class="flex justify-between label-caption">
+                                <span>-30% Discount</span>
+                                <span>0% Base</span>
+                                <span>+30% Premium</span>
+                            </div>
+                        </div>
+
+                        <!-- Lever 2: Marketing -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label class="form-label mb-0">2. Marketing &amp; Brand Budget</label>
+                                <span class="label-medium" style="color: var(--primary);" id="valMktg"
+                                      th:text="${simulationForm.marketingSpendDeltaPct != null ? (simulationForm.marketingSpendDeltaPct > 0 ? '+' : '') + simulationForm.marketingSpendDeltaPct + '%' : '0%'}">0%</span>
+                            </div>
+                            <input type="range" class="range-slider" min="-50" max="50" step="2" th:field="*{marketingSpendDeltaPct}" id="rangeMktg"
+                                   oninput="document.getElementById('valMktg').innerText = (this.value > 0 ? '+' : '') + this.value + '%'"/>
+                            <div class="flex justify-between label-caption">
+                                <span>-50% Austerity</span>
+                                <span>0% Base</span>
+                                <span>+50% Growth</span>
+                            </div>
+                        </div>
+
+                        <!-- Lever 3: Raw Materials -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label class="form-label mb-0">3. Raw Material &amp; COGS Cost</label>
+                                <span class="label-medium" style="color: var(--status-amber);" id="valRaw"
+                                      th:text="${simulationForm.rawMaterialCostDeltaPct != null ? (simulationForm.rawMaterialCostDeltaPct > 0 ? '+' : '') + simulationForm.rawMaterialCostDeltaPct + '%' : '0%'}">0%</span>
+                            </div>
+                            <input type="range" class="range-slider" min="-20" max="40" step="2" th:field="*{rawMaterialCostDeltaPct}" id="rangeRaw"
+                                   oninput="document.getElementById('valRaw').innerText = (this.value > 0 ? '+' : '') + this.value + '%'"/>
+                            <div class="flex justify-between label-caption">
+                                <span>-20% Rebate</span>
+                                <span>0% Base</span>
+                                <span>+40% Shock</span>
+                            </div>
+                        </div>
+
+                        <!-- Lever 4: Training -->
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <label class="form-label mb-0">4. Workforce Training &amp; Upskilling</label>
+                                <span class="label-medium" style="color: var(--status-green);" id="valTrain"
+                                      th:text="${simulationForm.trainingInvestmentDeltaPct != null ? (simulationForm.trainingInvestmentDeltaPct > 0 ? '+' : '') + simulationForm.trainingInvestmentDeltaPct + '%' : '0%'}">0%</span>
+                            </div>
+                            <input type="range" class="range-slider" min="-50" max="100" step="5" th:field="*{trainingInvestmentDeltaPct}" id="rangeTrain"
+                                   oninput="document.getElementById('valTrain').innerText = (this.value > 0 ? '+' : '') + this.value + '%'"/>
+                            <div class="flex justify-between label-caption">
+                                <span>-50% Cut</span>
+                                <span>0% Base</span>
+                                <span>+100% Boost</span>
+                            </div>
+                        </div>
+
+                        <!-- Save scenario drawer -->
+                        <div class="p-3" style="background: var(--bg-surface-secondary); border-radius: var(--radius); border: 1px solid var(--border-hairline);">
+                            <label class="flex items-center gap-2 label-medium" style="cursor: pointer;">
+                                <input type="checkbox" th:field="*{saveScenario}">
+                                <span>Save to Scenario Repository</span>
+                            </label>
+                            <input type="text" class="form-control mt-2" th:field="*{description}" placeholder="Optional notes / hypothesis..."/>
+                        </div>
+
+                        <button th:if="${!isOperations}" type="submit" class="btn btn-primary" style="width: 100%;">
+                            Compute Sensitivity →
+                        </button>
+                        <button th:if="${isOperations}" type="button" class="btn btn-primary" disabled style="width: 100%; opacity: 0.6; cursor: not-allowed;" title="Operational Role: What-If simulation restricted">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            Compute Sensitivity (Locked)
+                        </button>
+                        <div th:if="${isOperations}" class="label-caption mt-2 text-center" style="color: var(--status-red);">
+                            Operational Role: Sensitivity modeling is read-only.
+                        </div>
+                    </form>
+
+                    <!-- Elasticity assumptions -->
+                    <div class="mt-6 pt-4" style="border-top: 1px solid var(--border-hairline); font-size: 12px; color: var(--text-secondary);">
+                        <strong style="color: var(--text-primary); display: block; margin-bottom: 4px;">Model Elasticities:</strong>
+                        <div>&bull; Price Elasticity of Demand: -1.2 (Volume drops 1.2% per +1% price)</div>
+                        <div>&bull; Marketing Elasticity: +0.45 (Volume rises +0.45% per +1% mktg)</div>
+                        <div>&bull; COGS Pass-Through: 52% of baseline unit revenue</div>
+                    </div>
+                </div>
+
+                <!-- Right 7 Columns: Results & Charts -->
+                <div class="col-span-7 flex flex-col gap-6">
+                    <!-- Trajectory Results Card -->
+                    <div class="card card-p32">
+                        <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <h2 class="section-title">Simulated Scorecard Trajectory</h2>
+                                <p class="label-muted mt-0.5" th:text="'Scenario: ' + ${result.scenarioName}">Scenario: Base</p>
+                            </div>
+                            <div class="status-indicator">
+                                <span class="status-dot" th:classappend="${result.riskLevel == 'LOW RISK / OPTIMAL' ? 'dot-green' : (result.riskLevel == 'MODERATE RISK' ? 'dot-amber' : 'dot-red')}"></span>
+                                <span class="label-medium" th:text="${result.riskLevel}">Low Risk</span>
+                            </div>
+                        </div>
+
+                        <!-- 4 Metric Cards -->
+                        <div class="grid-cols-4 mb-6">
+                            <div class="card p-3" style="border-radius: var(--radius-sm);">
+                                <span class="label-caption">Operating Margin</span>
+                                <div class="metric-lg mt-1" style="font-size: 20px;" th:text="${result.simulatedOperatingMargin} + '%'">16.2%</div>
+                                <div class="label-caption mt-1" style="font-size: 12px;">
+                                    <span th:style="${result.simulatedOperatingMargin >= result.baseOperatingMargin ? 'color: var(--status-green);' : 'color: var(--status-red);'}"
+                                          th:text="${result.simulatedOperatingMargin >= result.baseOperatingMargin ? '▲ +' : '▼ '} + ${#numbers.formatDecimal(result.simulatedOperatingMargin - result.baseOperatingMargin, 1, 1)} + '%'">+0.8%</span>
+                                    <span>(Base: <span th:text="${result.baseOperatingMargin} + '%'">15.4%</span>)</span>
+                                </div>
+                            </div>
+
+                            <div class="card p-3" style="border-radius: var(--radius-sm);">
+                                <span class="label-caption">Net Profit</span>
+                                <div class="metric-lg mt-1" style="font-size: 20px;" th:text="'$' + ${result.simulatedNetProfit} + 'M'">$47.2M</div>
+                                <div class="label-caption mt-1" style="font-size: 12px;">
+                                    <span th:style="${result.simulatedNetProfit >= result.baseNetProfit ? 'color: var(--status-green);' : 'color: var(--status-red);'}"
+                                          th:text="${result.simulatedNetProfit >= result.baseNetProfit ? '▲ +$' : '▼ -$'} + ${#numbers.formatDecimal(T(java.lang.Math).abs(result.simulatedNetProfit - result.baseNetProfit), 1, 1)} + 'M'">+$2.7M</span>
+                                    <span>(Base: $<span th:text="${result.baseNetProfit}">44.5</span>M)</span>
+                                </div>
+                            </div>
+
+                            <div class="card p-3" style="border-radius: var(--radius-sm);">
+                                <span class="label-caption">Retention Rate</span>
+                                <div class="metric-lg mt-1" style="font-size: 20px;" th:text="${result.simulatedCustomerRetention} + '%'">83.2%</div>
+                                <div class="label-caption mt-1" style="font-size: 12px;">
+                                    <span th:style="${result.simulatedCustomerRetention >= result.baseCustomerRetention ? 'color: var(--status-green);' : 'color: var(--status-red);'}"
+                                          th:text="${result.simulatedCustomerRetention >= result.baseCustomerRetention ? '▲ +' : '▼ '} + ${#numbers.formatDecimal(result.simulatedCustomerRetention - result.baseCustomerRetention, 1, 1)} + '%'">+1.7%</span>
+                                    <span>(Base: <span th:text="${result.baseCustomerRetention} + '%'">81.5%</span>)</span>
+                                </div>
+                            </div>
+
+                            <div class="card p-3" style="border-radius: var(--radius-sm);">
+                                <span class="label-caption">Fulfillment Cycle</span>
+                                <div class="metric-lg mt-1" style="font-size: 20px;" th:text="${result.simulatedCycleTime} + 'd'">5.8d</div>
+                                <div class="label-caption mt-1" style="font-size: 12px;">
+                                    <span th:style="${result.simulatedCycleTime <= result.baseCycleTime ? 'color: var(--status-green);' : 'color: var(--status-red);'}"
+                                          th:text="${result.simulatedCycleTime <= result.baseCycleTime ? '▼ -' : '▲ +'} + ${#numbers.formatDecimal(T(java.lang.Math).abs(result.simulatedCycleTime - result.baseCycleTime), 1, 1)} + 'd'">-1.0d</span>
+                                    <span>(Base: <span th:text="${result.baseCycleTime}">6.8</span>d)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart -->
+                        <div style="position: relative; height: 220px; width: 100%; margin-bottom: 24px;">
+                            <canvas id="simChart"></canvas>
+                        </div>
+
+                        <!-- Strategic Insights -->
+                        <div class="p-4" style="background: var(--bg-surface-secondary); border-radius: var(--radius); border: 1px solid var(--border-hairline);">
+                            <h3 class="section-title mb-2">DSS Strategic Insights</h3>
+                            <ul style="padding-left: 18px; margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-secondary);">
+                                <li th:each="insight : ${result.strategicInsights}" th:text="${insight}">Strategic insight statement</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Saved Scenarios Card -->
+                    <div class="card card-p32">
+                        <div class="flex items-center justify-between pb-3 mb-4" style="border-bottom: 1px solid var(--border-hairline);">
+                            <div>
+                                <h2 class="section-title">Saved Organizational Scenarios</h2>
+                                <p class="label-muted mt-0.5">Historical and hypothesis benchmark models</p>
+                            </div>
+                            <a th:href="@{/simulation/compare}" class="btn-text" style="font-size: 13px;">Compare Matrix →</a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Scenario</th>
+                                        <th>Price Δ</th>
+                                        <th>Mktg Δ</th>
+                                        <th>Raw Δ</th>
+                                        <th>Margin</th>
+                                        <th>Risk</th>
+                                        <th style="text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:if="${savedScenarios.isEmpty()}">
+                                        <td colspan="7" class="text-center py-4 label-muted">No saved scenarios yet.</td>
+                                    </tr>
+                                    <tr th:each="s : ${savedScenarios}">
+                                        <td class="body-medium" style="font-weight: 600;" th:text="${s.name}">Scenario</td>
+                                        <td th:text="${s.priceAdjustmentPct > 0 ? '+' : ''} + ${s.priceAdjustmentPct} + '%'">0%</td>
+                                        <td th:text="${s.marketingSpendDeltaPct > 0 ? '+' : ''} + ${s.marketingSpendDeltaPct} + '%'">0%</td>
+                                        <td th:text="${s.rawMaterialCostDeltaPct > 0 ? '+' : ''} + ${s.rawMaterialCostDeltaPct} + '%'">0%</td>
+                                        <td style="font-weight: 600; color: var(--primary);" th:text="${s.simulatedOperatingMargin} + '%'">16.2%</td>
+                                        <td>
+                                            <div class="status-indicator">
+                                                <span class="status-dot" th:classappend="${s.riskLevel == 'LOW RISK / OPTIMAL' ? 'dot-green' : (s.riskLevel == 'MODERATE RISK' ? 'dot-amber' : 'dot-red')}"></span>
+                                                <span class="label-caption" th:text="${s.riskLevel}">Low Risk</span>
+                                            </div>
+                                        </td>
+                                        <td style="text-align: right;">
+                                            <div class="flex items-center justify-end gap-2">
+                                                <a th:href="@{/simulation/compare(ids=${s.id})}" class="btn-text" style="font-size: 12px;">Compare</a>
+                                                <form th:action="@{'/simulation/delete/' + ${s.id}}" method="post" onsubmit="return confirm('Remove scenario?');">
+                                                    <button type="submit" class="btn-text" style="color: var(--status-red); font-size: 12px;">Delete</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer th:replace="~{fragments/footer :: footer}"></footer>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    function resetSliders() {
+        document.getElementById('rangePrice').value = 0;
+        document.getElementById('rangeMktg').value = 0;
+        document.getElementById('rangeRaw').value = 0;
+        document.getElementById('rangeTrain').value = 0;
+        document.getElementById('valPrice').innerText = '0%';
+        document.getElementById('valMktg').innerText = '0%';
+        document.getElementById('valRaw').innerText = '0%';
+        document.getElementById('valTrain').innerText = '0%';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const baseMargin = /*[[${result.baseOperatingMargin}]]*/ 15.4;
+        const simMargin = /*[[${result.simulatedOperatingMargin}]]*/ 16.2;
+        const baseRet = /*[[${result.baseCustomerRetention}]]*/ 81.5;
+        const simRet = /*[[${result.simulatedCustomerRetention}]]*/ 83.2;
+        const baseNps = /*[[${result.baseNps}]]*/ 68.0;
+        const simNps = /*[[${result.simulatedNps}]]*/ 70.0;
+        const baseEmpRet = /*[[${result.baseEmployeeRetention}]]*/ 92.8;
+        const simEmpRet = /*[[${result.simulatedEmployeeRetention}]]*/ 94.0;
+
+        const ctx = document.getElementById('simChart').getContext('2d');
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const gridColor = dark ? '#2A2E33' : '#EBEBEB';
+        const textColor = dark ? '#9CA3AF' : '#6B7280';
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Operating Margin (%)', 'Customer Retention (%)', 'NPS', 'Employee Retention (%)'],
+                datasets: [
+                    {
+                        label: 'Baseline Scorecard',
+                        data: [baseMargin, baseRet, baseNps, baseEmpRet],
+                        backgroundColor: dark ? '#363B42' : '#C7C4D8',
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    },
+                    {
+                        label: 'Simulated Trajectory',
+                        data: [simMargin, simRet, simNps, simEmpRet],
+                        backgroundColor: dark ? '#6366F1' : '#4F46E5',
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        barPercentage: 0.6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 100,
+                        grid: { color: gridColor, lineWidth: 1, borderDash: [4, 4] },
+                        ticks: { color: textColor, font: { family: 'Inter', size: 11 } },
+                        border: { display: false }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: textColor, font: { family: 'Inter', size: 11 } },
+                        border: { color: gridColor }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: dark ? '#F3F4F6' : '#111827', font: { family: 'Inter', size: 12 } }
+                    }
+                }
+            }
+        });
+        // Initialize React Bits FloatingLines Background
+        if (typeof window.initFloatingLines === 'function') {
+            window.initFloatingLines('#simulationFloatingLines .floating-lines-container', {
+                linesGradient: ["#e945f5", "#2f4bc0", "#e945f5"],
+                enabledWaves: ['top', 'middle', 'bottom'],
+                lineCount: 10,
+                lineDistance: 6,
+                bendStrength: -0.5,
+                interactive: true,
+                clickSwirl: true
+            });
+        }
+    });
+</script>
+</body>
+</html>
